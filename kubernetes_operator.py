@@ -4,14 +4,6 @@ from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOpera
 from airflow import configuration as conf
 
 
-# This will detect the default namespace locally and read the 
-# environment namespace when deployed to Astronomer.
-if namespace =='default':
-    config_file = '/usr/local/airflow/include/.kube/config'
-    in_cluster=False
-else:
-    in_cluster=True
-    config_file=None
 
 
 args = {
@@ -26,9 +18,19 @@ dag = DAG(
     dagrun_timeout=timedelta(minutes=60),
 )
 
-namespace = conf.get('kubernetes', 'NAMESPACE')
-#namespace = 'default'
+#namespace = conf.get('kubernetes', 'NAMESPACE')
+namespace = 'default'
 compute_resource = {'request_cpu': '800m', 'request_memory': '3Gi', 'limit_cpu': '800m', 'limit_memory': '3Gi'}
+
+# This will detect the default namespace locally and read the 
+# environment namespace when deployed to Astronomer.
+if namespace =='default':
+    config_file = '/usr/local/airflow/include/.kube/config'
+    in_cluster=False
+else:
+    in_cluster=True
+    config_file=None
+
 
 with dag:
     k = KubernetesPodOperator(
