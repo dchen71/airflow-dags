@@ -12,7 +12,7 @@ args = {
 dag = DAG(
     dag_id='example_docker_python',
     default_args=args,
-    schedule_interval='0 0 * * *',
+    schedule_interval=None,
     dagrun_timeout=timedelta(minutes=60),
 )
 
