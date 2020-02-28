@@ -10,7 +10,7 @@ args = {
 }
 
 dag = DAG(
-    dag_id='example wait',
+    dag_id='example_wait',
     default_args=args,
     schedule_interval=None,
     dagrun_timeout=timedelta(minutes=60),
