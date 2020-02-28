@@ -1,10 +1,8 @@
-from builtins import range
 from datetime import timedelta
 
 import airflow
 from airflow.models import DAG
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.docker_operator import DockerOperator
 
 args = {
     'owner': 'airflow',
