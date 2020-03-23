@@ -4,6 +4,18 @@ from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
 from airflow.contrib.kubernetes.pod import Port
 
+args = {
+    'owner': 'airflow',
+    'start_date': airflow.utils.dates.days_ago(2),
+}
+
+dag = DAG(
+    dag_id='example_kubernetes_pod2',
+    default_args=args,
+    schedule_interval=None,
+    dagrun_timeout=timedelta(minutes=60),
+)
+
 
 secret_file = Secret('volume', '/etc/sql_conn', 'airflow-secrets', 'sql_alchemy_conn')
 secret_env  = Secret('env', 'SQL_CONN', 'airflow-secrets', 'sql_alchemy_conn')
@@ -97,4 +109,3 @@ k = KubernetesPodOperator(namespace='default',
                           tolerations=tolerations,
                           configmaps=configmaps
                           )
-Pod Mutation Hook
