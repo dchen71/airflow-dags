@@ -22,7 +22,7 @@ kneaddata = DockerOperator(
         image = 'library/python:latest',
         api_version = 'auto',
         command = 'print("hello world")',
-        #docker_url = 'unix://var/run/docker.sock',
+        docker_url = 'unix://var/run/docker.sock',
         network_mode = 'bridge',
         dag = dag
         )
