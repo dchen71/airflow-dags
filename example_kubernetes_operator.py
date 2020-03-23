@@ -92,20 +92,21 @@ tolerations = [
      }
 ]
 
-k = KubernetesPodOperator(namespace='default',
-                          image="ubuntu:16.04",
-                          cmds=["bash", "-cx"],
-                          arguments=["echo", "10"],
-                          labels={"foo": "bar"},
-                          secrets=[secret_file, secret_env, secret_all_keys],
-                          ports=[port]
-                          volumes=[volume],
-                          volume_mounts=[volume_mount]
-                          name="test",
-                          task_id="task",
-                          affinity=affinity,
-                          is_delete_operator_pod=True,
-                          hostnetwork=False,
-                          tolerations=tolerations,
-                          configmaps=configmaps
-                          )
+with dag:
+    k = KubernetesPodOperator(namespace='default',
+      image="ubuntu:16.04",
+      cmds=["bash", "-cx"],
+      arguments=["echo", "10"],
+      labels={"foo": "bar"},
+      secrets=[secret_file, secret_env, secret_all_keys],
+      ports=[port]
+      volumes=[volume],
+      volume_mounts=[volume_mount]
+      name="test",
+      task_id="task",
+      affinity=affinity,
+      is_delete_operator_pod=True,
+      hostnetwork=False,
+      tolerations=tolerations,
+      configmaps=configmaps
+      )
