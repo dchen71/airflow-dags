@@ -22,7 +22,7 @@ import os
 
 from airflow import DAG
 from libs.helper import print_stuff
-from airflow.operators.python import PythonOperator
+from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
 
 args = {
