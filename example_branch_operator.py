@@ -16,13 +16,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-"""Example DAG demonstrating the usage of the BashOperator."""
+"""Example DAG demonstrating the usage of the BranchPythonOperator."""
 
-from datetime import timedelta
+import random
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python import BranchPythonOperator
 from airflow.utils.dates import days_ago
 
 args = {
@@ -31,44 +31,41 @@ args = {
 }
 
 dag = DAG(
-    dag_id='example_bash_operator',
+    dag_id='example_branch_operator',
     default_args=args,
-    schedule_interval='0 0 * * *',
-    dagrun_timeout=timedelta(minutes=60),
+    schedule_interval="@daily",
     tags=['example']
 )
 
-run_this_last = DummyOperator(
-    task_id='run_this_last',
+run_this_first = DummyOperator(
+    task_id='run_this_first',
     dag=dag,
 )
 
-# [START howto_operator_bash]
-run_this = BashOperator(
-    task_id='run_after_loop',
-    bash_command='echo 1',
+options = ['branch_a', 'branch_b', 'branch_c', 'branch_d']
+
+branching = BranchPythonOperator(
+    task_id='branching',
+    python_callable=lambda: random.choice(options),
     dag=dag,
 )
-# [END howto_operator_bash]
+run_this_first >> branching
 
-run_this >> run_this_last
+join = DummyOperator(
+    task_id='join',
+    trigger_rule='one_success',
+    dag=dag,
+)
 
-for i in range(3):
-    task = BashOperator(
-        task_id='runme_' + str(i),
-        bash_command='echo "{{ task_instance_key_str }}" && sleep 1',
+for option in options:
+    t = DummyOperator(
+        task_id=option,
         dag=dag,
     )
-    task >> run_this
 
-# [START howto_operator_bash_template]
-also_run_this = BashOperator(
-    task_id='also_run_this',
-    bash_command='echo "run_id={{ run_id }} | dag_run={{ dag_run }}"',
-    dag=dag,
-)
-# [END howto_operator_bash_template]
-also_run_this >> run_this_last
+    dummy_follow = DummyOperator(
+        task_id='follow_' + option,
+        dag=dag,
+    )
 
-if __name__ == "__main__":
-    dag.cli()
+    branching >> t >> dummy_follow >> join

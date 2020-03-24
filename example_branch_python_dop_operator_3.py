@@ -16,59 +16,52 @@
 # specific language governing permissions and limitations
 # under the License.
 
-"""Example DAG demonstrating the usage of the BashOperator."""
-
-from datetime import timedelta
+"""
+Example DAG demonstrating the usage of BranchPythonOperator with depends_on_past=True, where tasks may be run
+or skipped on alternating runs.
+"""
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python import BranchPythonOperator
 from airflow.utils.dates import days_ago
 
 args = {
     'owner': 'airflow',
     'start_date': days_ago(2),
+    'depends_on_past': True,
 }
 
 dag = DAG(
-    dag_id='example_bash_operator',
+    dag_id='example_branch_dop_operator_v3',
+    schedule_interval='*/1 * * * *',
     default_args=args,
-    schedule_interval='0 0 * * *',
-    dagrun_timeout=timedelta(minutes=60),
     tags=['example']
 )
 
-run_this_last = DummyOperator(
-    task_id='run_this_last',
+
+def should_run(**kwargs):
+    """
+    Determine which dummy_task should be run based on if the execution date minute is even or odd.
+
+    :param dict kwargs: Context
+    :return: Id of the task to run
+    :rtype: str
+    """
+    print('------------- exec dttm = {} and minute = {}'.
+          format(kwargs['execution_date'], kwargs['execution_date'].minute))
+    if kwargs['execution_date'].minute % 2 == 0:
+        return "dummy_task_1"
+    else:
+        return "dummy_task_2"
+
+
+cond = BranchPythonOperator(
+    task_id='condition',
+    python_callable=should_run,
     dag=dag,
 )
 
-# [START howto_operator_bash]
-run_this = BashOperator(
-    task_id='run_after_loop',
-    bash_command='echo 1',
-    dag=dag,
-)
-# [END howto_operator_bash]
-
-run_this >> run_this_last
-
-for i in range(3):
-    task = BashOperator(
-        task_id='runme_' + str(i),
-        bash_command='echo "{{ task_instance_key_str }}" && sleep 1',
-        dag=dag,
-    )
-    task >> run_this
-
-# [START howto_operator_bash_template]
-also_run_this = BashOperator(
-    task_id='also_run_this',
-    bash_command='echo "run_id={{ run_id }} | dag_run={{ dag_run }}"',
-    dag=dag,
-)
-# [END howto_operator_bash_template]
-also_run_this >> run_this_last
-
-if __name__ == "__main__":
-    dag.cli()
+dummy_task_1 = DummyOperator(task_id='dummy_task_1', dag=dag)
+dummy_task_2 = DummyOperator(task_id='dummy_task_2', dag=dag)
+cond >> [dummy_task_1, dummy_task_2]
