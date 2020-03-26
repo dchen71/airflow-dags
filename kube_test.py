@@ -61,6 +61,7 @@ with DAG(
     # Add arbitrary labels to worker pods
     three_task = KubernetesPodOperator(
         task_id="four_task",
+        name = "kubetest",
         namespace='default',
         image="ubuntu:16.04",
         cmds=["bash", "-cx"],
