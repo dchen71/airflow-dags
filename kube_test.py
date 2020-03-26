@@ -24,6 +24,8 @@ from airflow import DAG
 from libs.helper import print_stuff
 from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
+from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+
 
 args = {
     'owner': 'airflow',
@@ -57,7 +59,7 @@ with DAG(
     )
 
     # Add arbitrary labels to worker pods
-    three_task = PythonOperator(
+    three_task = KubernetesPodOperator(
         task_id="four_task",
         image="ubuntu:16.04",
         cmds=["bash", "-cx"],
