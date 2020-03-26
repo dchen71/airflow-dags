@@ -25,7 +25,7 @@ from libs.helper import print_stuff
 from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-from airflow.contrib.operators.docker_operator import DockerOperator
+from airflow.operators.docker_operator import DockerOperator
 
 
 args = {
