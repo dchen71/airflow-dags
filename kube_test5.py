@@ -31,18 +31,19 @@ from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
 
 
-volume_mount = VolumeMount('airflow1data',
-                            mount_path='/mnt/azure',
-                            sub_path=None,
-                            read_only=True)
 volume_config= {
     'persistentVolumeClaim':
       {
         'claimName': 'airflow1data'
       }
     }
+
 volume = Volume(name='airflow1data', configs=volume_config)
 
+volume_mount = VolumeMount(volume,
+                            mount_path='/mnt/azure',
+                            sub_path=None,
+                            read_only=True)
 args = {
     'owner': 'airflow',
     'start_date': days_ago(2)
