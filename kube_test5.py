@@ -40,7 +40,7 @@ volume_config= {
 
 volume = Volume(name='airflow1data', configs=volume_config)
 
-volume_mount = VolumeMount(volume,
+volume_mount = VolumeMount('airflow1data',
                             mount_path='/mnt/azure',
                             sub_path=None,
                             read_only=True)
