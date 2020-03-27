@@ -83,7 +83,7 @@ with DAG(
         image="airflow1.azurecr.io/python:v1",
         cmds=["ls"],
         arguments=["/mnt/azure"],
-        volume=[volume],
+        volumes=[volume],
         volume_mounts=[volume_mount],
         is_delete_operator_pod=True
     )
