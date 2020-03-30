@@ -68,12 +68,12 @@ with DAG(
         python_callable=print_stuff
     )
 
-    ## But you can if you want to
-    #one_task = BashOperator(
-    #    task_id="one_task",
-    #    bash_command="ls /mnt/azure",
-    #    executor_config={"KubernetesExecutor": {"image": "airflow1.azurecr.io/python:v1", "volume": volume, "volume_mounts": volume_mount}}
-    #)
+    # But you can if you want to
+    one_task = BashOperator(
+        task_id="one_task",
+        bash_command="ls /mnt/azure",
+        executor_config={"KubernetesExecutor": {"image": "airflow1.azurecr.io/python:v1", "volumes": volume, "volume_mounts": volume_mount}}
+    )
 
     # But you can if you want to
     two_task = KubernetesPodOperator(
@@ -88,5 +88,5 @@ with DAG(
         is_delete_operator_pod=True
     )
 
-    #start_task >> [one_task, two_task]
-    start_task >> [two_task]
+    start_task >> [one_task, two_task]
+    
