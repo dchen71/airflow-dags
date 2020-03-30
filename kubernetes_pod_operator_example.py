@@ -110,6 +110,7 @@ with DAG(
     env_vars (dict): Dictionary of potential environmental variables
     resources (dict): Dictionary containing the limits of CPUs and Memory or requests for certain amount of CPU/Memory. Mi for megabyte. Gi for gigabyte.
     xcom_push (bool): If true, return the output from the end of the container as a variable
+    params (dict): Parameters used for jinja2 to template in the arguments
     """
 
 
