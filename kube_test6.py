@@ -53,14 +53,11 @@ with DAG(
                 "volumes": [
                     {
                         "name": 'airflow1data', 
-                        "configs": [
-                            "persistentVolumeClaim": {"claimName": 'airflow1data'}
-                        ]
-                        
+                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
                         "hostPath": {"path": "/tmp/"}
                     }
                 ],
-                "volume_mounts": [
+                "volumeMounts": [
                     {
                         'mount_path': "/mnt/azure/",
                         'name': "airflow1data" 
