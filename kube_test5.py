@@ -66,7 +66,7 @@ with DAG(
     #one_task = BashOperator(
     #    task_id="one_task",
     #    bash_command="ls /mnt/azure",
-    #    executor_config={"KubernetesExecutor": {"image": "airflow1.azurecr.io/python:v1", "volumes": [volume], "volume_mounts": [volume_mount]}}
+    #    executor_config={"KubernetesExecutor": {"image": "airflow1.azurecr.io/python:v1", "volumes": [{"name": 'airflow1data', "persistentVolumeClaim": {"claimName": 'airflow1data'}}], "volume_mounts": ['airflow1data', mount_path = "/mnt/azure"]}}
     #)
 
     # But you can if you want to
