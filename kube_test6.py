@@ -52,10 +52,16 @@ with DAG(
                 "image": "airflow1.azurecr.io/python:v1", 
                 "request_memory": '128Mi',
                 "limit_memory": '128Mi',
+                "volumes": [
+                    {
+                        "name": 'airflow1data', 
+                        "hostPath": {"path": "/tmp/"}
+                    }
+                ],
                 "volume_mounts": [
                     {
-                        'name': "airflow1data", 
-                        'mountPath': "/mnt/azure/"
+                        'mountPath': "/mnt/azure/",
+                        'name': "airflow1data" 
                     }
                 ]
             }
