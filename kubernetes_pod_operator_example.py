@@ -26,7 +26,7 @@ from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
-
+from airflow.contrib.kubernetes.secret import Secret
 
 ##
 # Persistent Volume Configuration
@@ -34,6 +34,7 @@ from airflow.contrib.kubernetes.volume_mount import VolumeMount
 
 """
 Configuration for PVC claim
+Arguments:
 claimName (string): Name of the PVC claim in kubernetes
 """
 volume_config= {
@@ -47,6 +48,7 @@ volume = Volume(name='airflow1data', configs=volume_config)
 
 """
 Configuration for Volume Mounting location from PVC
+Arguments:
 name (string): Name of the PVC volume request
 mount_path (string): Mount directory in the pod
 sub_path (string): Sub path based on the mount directory
@@ -61,6 +63,24 @@ args = {
     'owner': 'airflow',
     'start_date': days_ago(2)
 }
+
+##
+# Secret Configuration
+##
+
+"""
+Secrets pull secret variables and their contents from Kubernetes. You do this to protect things like database credentials. You can do this with files, tokens, or variables.
+Arguments:
+deploy_type (string): How you want to deploy this secret inside the container
+deploy_target (string): The name of the environmental variable in this case
+secret (string): The name of the secret stored in Kubernetes
+key (string): The key of the secret stored in the object
+"""
+secret_env = Secret(
+    deploy_type='env',
+    deploy_target='SQL_CONN',
+    secret='airflow-secrets',
+    key='sql_alchemy_conn')
 
 ##
 # Example DAG
@@ -85,6 +105,8 @@ with DAG(
     volumes (list): List of Volume objects containing which volumes will be mounted
     volume_mounts (list): List of VolumeMount objects containing mount locations to the container
     is_delete_operator_pod (boolean): Delete pod when done. Should be true always.
+    secrets (list): List of secret objects
+    env_vars (dict): Dictionary of potential environmental variables
     """
 
 
@@ -129,10 +151,12 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["echo"],
-        arguments=["hello world"],
+        arguments=["hello world $EXAMPLE_VAR"],
         volumes=[volume],
         volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
+        is_delete_operator_pod=True,
+        secrets = [secret_env],
+        env_vars={'EXAMPLE_VAR': 'person'}
     )
 
     # Order for pipeline to do stuff
