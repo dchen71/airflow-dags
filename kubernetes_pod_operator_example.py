@@ -96,6 +96,7 @@ with DAG(
     """
     Example Task using KubernetesPodOperator
     This will start up a new Pod(Container) for each instance
+    https://airflow.apache.org/docs/1.10.1/kubernetes.html
     Arguments:
     name (string): Name of the pod for kubernetes
     namespace (string): Name of namespace everything resides in. Default is 'default'
@@ -107,6 +108,8 @@ with DAG(
     is_delete_operator_pod (boolean): Delete pod when done. Should be true always.
     secrets (list): List of secret objects
     env_vars (dict): Dictionary of potential environmental variables
+    resources (dict): Dictionary containing the limits of CPUs and Memory or requests for certain amount of CPU/Memory. Mi for megabyte. Gi for gigabyte.
+    xcom_push (bool): If true, return the output from the end of the container as a variable
     """
 
 
@@ -119,7 +122,8 @@ with DAG(
         arguments=["/mnt/azure"],
         volumes=[volume],
         volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
+        is_delete_operator_pod=True,
+        resources={'limit_memory': '256Mi', 'limit_cpu': 1}
     )
     
     example_task1 = KubernetesPodOperator(
@@ -151,7 +155,7 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["echo"],
-        arguments=["hello world ${EXAMPLE_VAR}"],
+        arguments=["hello world {{EXAMPLE_VAR}}"],
         #volumes=[volume],
         #volume_mounts=[volume_mount],
         is_delete_operator_pod=True,
