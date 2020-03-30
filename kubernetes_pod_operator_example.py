@@ -155,7 +155,7 @@ with DAG(
         volumes=[volume],
         volume_mounts=[volume_mount],
         is_delete_operator_pod=True,
-        secrets = [secret_env],
+        #secrets = [secret_env],
         env_vars={'EXAMPLE_VAR': 'person'}
     )
 
