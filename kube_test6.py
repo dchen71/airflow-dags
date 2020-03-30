@@ -99,7 +99,7 @@ with DAG(
                 "volumes": [
                     {
                         "name": 'airflow1data', 
-                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
+                        #"persistentVolumeClaim": {"claimName": 'airflow1data'},
                         "hostPath": {"path": "/tmp/"}
                     }
                 ],
