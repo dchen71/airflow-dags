@@ -140,8 +140,8 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["pwd"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
+        #volumes=[volume],
+        #volume_mounts=[volume_mount],
         is_delete_operator_pod=True
     )
 
@@ -151,9 +151,9 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["echo"],
-        arguments=["hello world $EXAMPLE_VAR"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
+        arguments=["hello world ${EXAMPLE_VAR}"],
+        #volumes=[volume],
+        #volume_mounts=[volume_mount],
         is_delete_operator_pod=True,
         #secrets = [secret_env],
         env_vars={'EXAMPLE_VAR': 'person'}
