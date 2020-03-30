@@ -86,17 +86,42 @@ with DAG(
     )
 
     # But you can if you want to
-    two_task = KubernetesPodOperator(
-        task_id="four_task",
-        name = "kubetest",
-        namespace='default',
-        image="airflow1.azurecr.io/python:v1",
-        cmds=["ls"],
-        arguments=["/mnt/azure"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
+    two_task = BashOperator(
+        task_id="two_task",
+        bash_command="pwd",
+        executor_config={"KubernetesExecutor": {
+                "image": "airflow1.azurecr.io/python:v1", 
+                "volumes": [
+                    {
+                        "name": 'airflow1data', 
+                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
+                        "hostPath": {"path": "/tmp/"}
+                    }
+                ],
+                "volume_mounts": [
+                    {
+                        'mount_path': "/mnt/azure/",
+                        'name': "airflow1data" 
+                    }
+                ]
+            }
+        }
     )
 
-    start_task >> [one_task, two_task]
+    three_task = BashOperator(
+        task_id="three_task",
+        bash_command="pwd",
+        executor_config={"KubernetesExecutor": {
+                "image": "airflow1.azurecr.io/python:v1", 
+                "volumes": [
+                    volume
+                ],
+                "volume_mounts": [
+                    volume_mount
+                ]
+            }
+        }
+    )
+
+    start_task >> [one_task, two_task, three_task]
 
