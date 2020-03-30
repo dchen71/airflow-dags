@@ -63,11 +63,6 @@ with DAG(
     )
 
     ## But you can if you want to
-    #one_task = BashOperator(
-    #    task_id="one_task",
-    #    bash_command="ls /mnt/azure",
-    #    executor_config={"KubernetesExecutor": {"image": "airflow1.azurecr.io/python:v1", "volumes": [{"name": 'airflow1data', "persistentVolumeClaim": {"claimName": 'airflow1data'}}], "volume_mounts": ['name':'airflow1data', 'mount_path' = "/mnt/azure"]}}
-    #)
     one_task = BashOperator(
         task_id="one_task",
         bash_command="ls /mnt/azure",
@@ -82,7 +77,7 @@ with DAG(
                 "volume_mounts": [
                     {
                         'name': "airflow1data", 
-                        'mount_path': "/mnt/azure"
+                        'mount_path': "/mnt/azure/"
                     }
                 ]
             }
