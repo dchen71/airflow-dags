@@ -50,6 +50,7 @@ with DAG(
         bash_command="df -h",
         executor_config={"KubernetesExecutor": {
                 "image": "airflow1.azurecr.io/python:v1", 
+                
                 "volumes": [
                     {
                         "name": 'airflow1data', 
@@ -57,9 +58,9 @@ with DAG(
                         "hostPath": {"path": "/tmp/"}
                     }
                 ],
-                "volumeMounts": [
+                "volume_mounts": [
                     {
-                        'mount_path': "/mnt/azure/",
+                        'mountPath': "/mnt/azure/",
                         'name': "airflow1data" 
                     }
                 ]
@@ -82,7 +83,7 @@ with DAG(
                 ],
                 "volume_mounts": [
                     {
-                        'mount_path': "/mnt/azure/",
+                        'mountPath': "/mnt/azure/",
                         'name': "airflow1data" 
                     }
                 ]
@@ -104,7 +105,7 @@ with DAG(
                 ],
                 "volume_mounts": [
                     {
-                        'mount_path': "/mnt/azure/",
+                        'mountPath': "/mnt/azure/",
                         'name': "airflow1data" 
                     }
                 ]
