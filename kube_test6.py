@@ -73,7 +73,7 @@ with DAG(
         task_id="two_task",
         bash_command="pwd",
         executor_config={"KubernetesExecutor": {
-                "image": "airflow1.azurecr.io/python:v1", 
+                "image": "airflow1.azurecr.io/dogman:v1", 
                 "volumes": [
                     {
                         "name": 'airflow1data', 
