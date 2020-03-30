@@ -87,9 +87,21 @@ with DAG(
     is_delete_operator_pod (boolean): Delete pod when done. Should be true always.
     """
 
+
+    start_task = KubernetesPodOperator(
+        task_id="df",
+        name = "kubetest",
+        namespace='default',
+        image="airflow1.azurecr.io/python:v1",
+        cmds=["ls"],
+        arguments=["/mnt/azure"],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True
+    )
     
-    example_task = KubernetesPodOperator(
-        task_id="example",
+    example_task1 = KubernetesPodOperator(
+        task_id="ls",
         name = "kubetest",
         namespace='default',
         image="airflow1.azurecr.io/python:v1",
@@ -100,6 +112,30 @@ with DAG(
         is_delete_operator_pod=True
     )
 
+    example_task2 = KubernetesPodOperator(
+        task_id="pwd",
+        name = "kubetest",
+        namespace='default',
+        image="airflow1.azurecr.io/python:v1",
+        cmds=["pwd"],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True
+    )
+
+    example_task3 = KubernetesPodOperator(
+        task_id="echo",
+        name = "kubetest",
+        namespace='default',
+        image="airflow1.azurecr.io/python:v1",
+        cmds=["echo"],
+        arguments=["hello world"],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True
+    )
+
     # Order for pipeline to do stuff
-    example_task
+    ## start pipeline > list of 2 tasks > converge
+    start_task >> [example_task1, example_task2] >> example_task3
     
