@@ -56,12 +56,6 @@ with DAG(
     tags=['example'],
 ) as dag:
 
-    tolerations = [{
-        'key': 'dedicated',
-        'operator': 'Equal',
-        'value': 'airflow'
-    }]
-
     # You don't have to use any special KubernetesExecutor configuration if you don't want to
     start_task = PythonOperator(
         task_id="start_task",
