@@ -53,7 +53,10 @@ with DAG(
                 "volumes": [
                     {
                         "name": 'airflow1data', 
-                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
+                        "configs": [
+                            "persistentVolumeClaim": {"claimName": 'airflow1data'}
+                        ]
+                        
                         "hostPath": {"path": "/tmp/"}
                     }
                 ],
