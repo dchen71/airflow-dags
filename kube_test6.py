@@ -93,7 +93,7 @@ with DAG(
 
     three_task = BashOperator(
         task_id="three_task",
-        bash_command="pwd",
+        bash_command="ls /mnt/azure/",
         executor_config={"KubernetesExecutor": {
                 "image": "airflow1.azurecr.io/python:v1", 
                 "volumes": [
