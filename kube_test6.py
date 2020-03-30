@@ -32,7 +32,7 @@ args = {
 }
 
 with DAG(
-    dag_id='kube_test6',
+    dag_id='kube_test7',
     default_args=args,
     schedule_interval=None,
     tags=['example'],
