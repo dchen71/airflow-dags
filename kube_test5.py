@@ -67,7 +67,7 @@ with DAG(
         task_id="four_task",
         name = "kubetest",
         namespace='default',
-        image="airflow1.azurecr.io/python:v1",
+        image="airflow1.azurecr.io/robototototot:v1",
         cmds=["ls"],
         arguments=["/mnt/azure"],
         volumes=[volume],
