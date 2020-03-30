@@ -114,10 +114,17 @@ with DAG(
         executor_config={"KubernetesExecutor": {
                 "image": "airflow1.azurecr.io/python:v1", 
                 "volumes": [
-                    volume
+                    {
+                        "name": 'airflow1data', 
+                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
+                        "hostPath": {"path": "/tmp/"}
+                    }
                 ],
                 "volume_mounts": [
-                    volume_mount
+                    {
+                        'mount_path': "/mnt/azure/",
+                        'name': "airflow1data" 
+                    }
                 ]
             }
         }
