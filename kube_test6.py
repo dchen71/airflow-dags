@@ -50,18 +50,12 @@ with DAG(
         bash_command="df -h",
         executor_config={"KubernetesExecutor": {
                 "image": "airflow1.azurecr.io/python:v1", 
-                
-                "volumes": [
-                    {
-                        "name": 'airflow1data', 
-                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
-                        "hostPath": {"path": "/tmp/"}
-                    }
-                ],
+                "request_memory": '128Mi',
+                "limit_memory": '128Mi',
                 "volume_mounts": [
                     {
-                        'mountPath': "/mnt/azure/",
-                        'name': "airflow1data" 
+                        'name': "airflow1data", 
+                        'mountPath': "/mnt/azure/"
                     }
                 ]
             }
