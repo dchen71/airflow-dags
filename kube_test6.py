@@ -50,7 +50,7 @@ args = {
 }
 
 with DAG(
-    dag_id='kube_test5',
+    dag_id='kube_test6',
     default_args=args,
     schedule_interval=None,
     tags=['example'],
@@ -60,6 +60,18 @@ with DAG(
     start_task = PythonOperator(
         task_id="start_task",
         python_callable=print_stuff
+    )
+
+    ## But you can if you want to
+    #one_task = BashOperator(
+    #    task_id="one_task",
+    #    bash_command="ls /mnt/azure",
+    #    executor_config={"KubernetesExecutor": {"image": "airflow1.azurecr.io/python:v1", "volumes": [{"name": 'airflow1data', "persistentVolumeClaim": {"claimName": 'airflow1data'}}], "volume_mounts": ['name':'airflow1data', 'mount_path' = "/mnt/azure"]}}
+    #)
+    one_task = BashOperator(
+        task_id="one_task",
+        bash_command="ls /mnt/azure",
+        executor_config={"KubernetesExecutor": {"image": "airflow1.azurecr.io/python:v1", "volume_mounts": ['airflow1data', 'mount_path' = "/mnt/azure"]}}
     )
 
     # But you can if you want to
@@ -75,5 +87,5 @@ with DAG(
         is_delete_operator_pod=True
     )
 
-    start_task >> two_task
-    
+    start_task >> [one_task, two_task]
+
