@@ -83,7 +83,7 @@ with DAG(
 
     start0 = KubernetesPodOperator(
         task_id="test",
-        name = "aloha2",
+        name = "aloha3",
         namespace='default',
         image="ubuntu",
         cmds=["df -h"],
