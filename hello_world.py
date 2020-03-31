@@ -98,7 +98,7 @@ with DAG(
         task_id="aloha",
         name = "aloha",
         namespace='default',
-        image="airflow1.azurecr.io/python:v1",
+        image="ubuntu",
         cmds=["touch /mnt/azure/hello_world.txt;echo hello world >> /mnt/azure/hello_world.txt"],
         volumes=[volume],
         volume_mounts=[volume_mount],
