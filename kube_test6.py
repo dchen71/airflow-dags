@@ -129,7 +129,7 @@ with DAG(
                 "volume_mounts": [
                     {
                         "mountPath": "/foo/",
-                        "name": "example-kubernetes-test-volume",
+                        "name": "airflow1data",
                     },
                 ]
             }
