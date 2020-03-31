@@ -81,8 +81,21 @@ with DAG(
 
     start = DummyOperator(task_id='start_dag', dag=dag)
 
-    start_task = KubernetesPodOperator(
+    start1 = KubernetesPodOperator(
         task_id="df",
+        name = "aloha2",
+        namespace='default',
+        image="airflow1.azurecr.io/python:v1",
+        cmds=["df -h"],
+        arguments=["/mnt/azure"],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True,
+        resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
+    )
+
+    start_task = KubernetesPodOperator(
+        task_id="aloha",
         name = "aloha",
         namespace='default',
         image="airflow1.azurecr.io/python:v1",
@@ -96,6 +109,6 @@ with DAG(
 
     end = DummyOperator(task_id='end_dag', dag=dag)
     
-    
-    start >> start_task >> end
+
+    start >> start1 >> start_task >> end
     
