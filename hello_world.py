@@ -41,7 +41,7 @@ read_only (boolean): If the mount is read only or not
 volume_mount = VolumeMount('airflow1data',
                             mount_path='/mnt/azure',
                             sub_path=None,
-                            read_only=False)
+                            read_only=True)
 
 args = {
     'owner': 'airflow',
