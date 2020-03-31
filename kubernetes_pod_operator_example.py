@@ -156,13 +156,13 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["echo"],
-        arguments=["hello world", '{{params.example_var}}'],
+        arguments=["hello world", '{{params.example_var}}', '$(EXAMPLE_VAR2)'],
         #volumes=[volume],
         #volume_mounts=[volume_mount],
         is_delete_operator_pod=True,
         #secrets = [secret_env],
-        params={'example_var': 'person'},
-        env_vars={'EXAMPLE_VAR': 'person'}
+        params={'example_var': 'roger'},
+        env_vars={'EXAMPLE_VAR2': 'roger'}
     )
 
     # Order for pipeline to do stuff
