@@ -89,7 +89,7 @@ with DAG(
         cmds=["df -h"],
         volumes=[volume],
         volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     start1 = KubernetesPodOperator(
