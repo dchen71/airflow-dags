@@ -85,7 +85,7 @@ with DAG(
         task_id="df",
         name = "aloha2",
         namespace='default',
-        image="airflow1.azurecr.io/python:v1",
+        image="ubuntu",
         cmds=["df -h"],
         arguments=["/mnt/azure"],
         volumes=[volume],
