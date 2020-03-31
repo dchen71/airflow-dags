@@ -41,7 +41,7 @@ read_only (boolean): If the mount is read only or not
 volume_mount = VolumeMount('airflow1data',
                             mount_path='/mnt/azure',
                             sub_path=None,
-                            read_only=True)
+                            read_only=False)
 
 args = {
     'owner': 'airflow',
@@ -85,7 +85,7 @@ with DAG(
         task_id="df",
         name = "aloha2",
         namespace='default',
-        image="ubuntu",
+        image="_/ubuntu:latest",
         cmds=["df -h"],
         arguments=["/mnt/azure"],
         volumes=[volume],
