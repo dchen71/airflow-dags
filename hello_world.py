@@ -81,11 +81,22 @@ with DAG(
 
     start = DummyOperator(task_id='start_dag', dag=dag)
 
+    start0 = KubernetesPodOperator(
+        task_id="test",
+        name = "aloha2",
+        namespace='default',
+        image="ubuntu",
+        cmds=["df -h"],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True
+    )
+
     start1 = KubernetesPodOperator(
         task_id="df",
         name = "aloha2",
         namespace='default',
-        image="_/ubuntu:latest",
+        image="ubuntu",
         cmds=["df -h"],
         arguments=["/mnt/azure"],
         volumes=[volume],
@@ -110,5 +121,5 @@ with DAG(
     end = DummyOperator(task_id='end_dag', dag=dag)
     
 
-    start >> start1 >> start_task >> end
+    start >> start0 >> start1 >> start_task >> end
     
