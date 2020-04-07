@@ -55,7 +55,7 @@ read_only (boolean): If the mount is read only or not
 volume_mount = VolumeMount('airflow2',
                             mount_path='/mnt/azure',
                             sub_path=None,
-                            read_only=True)
+                            read_only=False)
 
 args = {
     'owner': 'airflow',
@@ -82,7 +82,7 @@ with DAG(
         arguments=["/mnt/azure"],
         volumes=[volume],
         volume_mounts=[volume_mount],
-        is_delete_operator_pod=True,
+        is_delete_operator_pod=False,
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
     
