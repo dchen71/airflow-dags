@@ -29,6 +29,9 @@ args = {
     'start_date': days_ago(2)
 }
 
+def print_stuff():
+    print("hello world")
+
 with DAG(
     dag_id='example_kubernetes_executor',
     default_args=args,
