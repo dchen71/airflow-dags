@@ -21,7 +21,6 @@ This is an example dag for using the Kubernetes Pod Operator.
 import os
 
 from airflow import DAG
-from libs.helper import print_stuff
 from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.contrib.kubernetes.volume import Volume
