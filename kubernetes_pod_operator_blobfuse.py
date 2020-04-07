@@ -21,6 +21,7 @@ This is an example dag for using the Kubernetes Pod Operator.
 import os
 
 from airflow import DAG
+from libs.helper import print_stuff
 from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.contrib.kubernetes.volume import Volume
@@ -39,11 +40,11 @@ claimName (string): Name of the PVC claim in kubernetes
 volume_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'airflow1data'
+        'claimName': 'pvc-blobfuse-flexvol'
       }
     }
 
-volume = Volume(name='airflow1data', configs=volume_config)
+volume = Volume(name='flexvol-mount', configs=volume_config)
 
 """
 Configuration for Volume Mounting location from PVC
@@ -53,7 +54,7 @@ mount_path (string): Mount directory in the pod
 sub_path (string): Sub path based on the mount directory
 read_only (boolean): If the mount is read only or not
 """
-volume_mount = VolumeMount('airflow1data',
+volume_mount = VolumeMount('flexvol-mount',
                             mount_path='/mnt/azure',
                             sub_path=None,
                             read_only=True)
@@ -85,7 +86,7 @@ secret_env = Secret(
 # Example DAG
 ##
 with DAG(
-    dag_id='kubernetes_pod_operator_example',
+    dag_id='kubernetes_pod_operator_blobfuse',
     default_args=args,
     schedule_interval=None,
     tags=['example'],
