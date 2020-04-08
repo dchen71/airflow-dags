@@ -25,6 +25,7 @@ from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
+from airflow.operators.python_operator import PythonOperator
 
 ##
 # Persistent Volume Configuration
@@ -73,6 +74,7 @@ with DAG(
     tags=['example'],
 ) as dag:
 
+    # Lazily ls volume mount
     start_task = KubernetesPodOperator(
         task_id="df",
         name = "kubetest",
@@ -86,16 +88,17 @@ with DAG(
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
     
-    example_task1 = KubernetesPodOperator(
-        task_id="ls",
-        name = "kubetest",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["ls"],
-        arguments=["/mnt/azure"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
+    def command_tasks():
+        """
+        Read file and trigger dags to build hellow worlds
+        """
+        circe = open("/mnt/azure/circe.txt", "r")
+        for line in circe:
+            print(line)
+
+    master_task = PythonOperator(
+        task_id="trigger_tasks",
+        python_callable=command_tasks
     )
 
     example_task2 = KubernetesPodOperator(
@@ -126,5 +129,5 @@ with DAG(
 
     # Order for pipeline to do stuff
     ## start pipeline > list of 2 tasks > converge
-    start_task >> [example_task1, example_task2] >> example_task3
+    start_task >> master_task
     
