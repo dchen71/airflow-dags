@@ -115,7 +115,7 @@ with DAG(
         name = "kubetest",
         namespace='default',
         image="airflow1.azurecr.io/beaver:18.04",
-        cmds=["/bin/bash", "-c", "cat /mnt/azure/circe.txt | while read line; do echo pwd; echo $line; touch /mnt/azure/$line.txt; done"],
+        cmds=["/bin/bash", "-c", "cat /mnt/azure/circe.txt | while read line; do pwd; echo $line; touch /mnt/azure/$line.txt; done"],
         volumes=[volume],
         volume_mounts=[volume_mount],
         is_delete_operator_pod=False
