@@ -31,11 +31,7 @@ from airflow.contrib.kubernetes.volume_mount import VolumeMount
 # Persistent Volume Configuration
 ##
 
-"""
-Configuration for PVC claim
-Arguments:
-claimName (string): Name of the PVC claim in kubernetes
-"""
+## Input Volume
 volume_config= {
     'persistentVolumeClaim':
       {
@@ -43,20 +39,27 @@ volume_config= {
       }
     }
 
-volume = Volume(name='airflow2', configs=volume_config)
-
-"""
-Configuration for Volume Mounting location from PVC
-Arguments:
-name (string): Name of the PVC volume request
-mount_path (string): Mount directory in the pod
-sub_path (string): Sub path based on the mount directory
-read_only (boolean): If the mount is read only or not
-"""
-volume_mount = VolumeMount('airflow2',
+volume = Volume(name='input-mount', configs=volume_config)
+volume_mount = VolumeMount('input-mount',
                             mount_path='/mnt/azure',
                             sub_path=None,
+                            read_only=True)
+
+
+## Output Volume
+volume2_config= {
+    'persistentVolumeClaim':
+      {
+        'claimName': 'pvc-competitions-airflow3'
+      }
+    }
+
+volume2 = Volume(name='output-mount', configs=volume2_config)
+volume2_mount = VolumeMount('output-mount',
+                            mount_path='/mnt/azure2',
+                            sub_path=None,
                             read_only=False)
+
 
 args = {
     'owner': 'airflow',
@@ -82,8 +85,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["ls"],
         arguments=["/mnt/azure"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
+        volumes=[volume, volume2],
+        volume_mounts=[volume_mount, volume2_mount],
         is_delete_operator_pod=True,
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
@@ -93,9 +96,9 @@ with DAG(
         name = "kubetest",
         namespace='default',
         image="airflow1.azurecr.io/beaver:18.04",
-        cmds=["/bin/bash", "-c", "cat /mnt/azure/circe.txt | while read line; do touch /mnt/azure/$line.txt; done"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
+        cmds=["/bin/bash", "-c", "cat /mnt/azure/circe.txt | while read line; do touch /mnt/azure2/$line.txt; done"],
+        volumes=[volume, volume2],
+        volume_mounts=[volume_mount, volume2_mount],
         is_delete_operator_pod=True
     )
 
@@ -104,9 +107,9 @@ with DAG(
         name = "kubetest",
         namespace='default',
         image="airflow1.azurecr.io/dingo:19.04",
-        cmds=["/bin/bash", "-c", "cat /mnt/azure/circe.txt | while read line; do echo hello world $line >> /mnt/azure/$line.txt; done"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
+        cmds=["/bin/bash", "-c", "cat /mnt/azure/circe.txt | while read line; do echo hello world $line >> /mnt/azure2/$line.txt; done"],
+        volumes=[volume, volume2],
+        volume_mounts=[volume_mount, volume2_mount],
         is_delete_operator_pod=True
     )
 
