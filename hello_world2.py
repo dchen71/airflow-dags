@@ -90,7 +90,7 @@ with DAG(
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
     
-    test_task = PythonOperator(
+    test_task = BashOperator(
         task_id="test_tasks",
         bash_command="df -h",
         executor_config={"KubernetesExecutor": {
