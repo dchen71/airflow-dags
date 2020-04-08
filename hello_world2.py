@@ -97,8 +97,11 @@ with DAG(
                 "image": "ubuntu:latest",
                 "volumes": [
                     {
-                        "name": 'airflow2', 
-                        "persistentVolumeClaim": {"claimName": 'pvc-competitions-airflow2'}
+                        "name": "airflow2", 
+                        "persistentVolumeClaim": 
+                        {
+                            "claimName": "pvc-competitions-airflow2"
+                        }
                     }
                 ],
                 "volume_mounts": [
