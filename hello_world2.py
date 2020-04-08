@@ -92,6 +92,7 @@ with DAG(
         """
         Read file and trigger dags to build hellow worlds
         """
+        print(os.listdir("/mnt/azure/"))
         circe = open("/mnt/azure/circe.txt", "r")
         for line in circe:
             print(line)
