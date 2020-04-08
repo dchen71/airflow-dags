@@ -99,7 +99,23 @@ with DAG(
 
     master_task = PythonOperator(
         task_id="trigger_tasks",
-        python_callable=command_tasks
+        python_callable=command_tasks,
+        executor_config={"KubernetesExecutor": {
+                "image": "python:latest",
+                "volumes": [
+                    {
+                        "name": 'airflow2', 
+                        "persistentVolumeClaim": {"claimName": 'pvc-competitions-airflow2'}
+                    }
+                ],
+                "volume_mounts": [
+                    {
+                        'mountPath': "/mnt/azure/",
+                        'name': "airflow2" 
+                    }
+                ]
+            }
+        }
     )
 
     example_task2 = KubernetesPodOperator(
