@@ -25,8 +25,6 @@ from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
-from airflow.operators.python_operator import PythonOperator
-from airflow.operators.bash_operator import BashOperator
 
 
 ##
@@ -108,7 +106,7 @@ with DAG(
         namespace='default',
         image="airflow1.azurecr.io/dingo:19.04",
         cmds=["/bin/bash", "-c"],
-        args=["cat /mnt/azure/circe.txt | while read line; do echo $line >> /mnt/azure/$line.txt; done"],
+        args=["cat /mnt/azure/circe.txt | while read line; do echo hello world $line >> /mnt/azure/$line.txt; done"],
         volumes=[volume],
         volume_mounts=[volume_mount],
         is_delete_operator_pod=True
