@@ -92,7 +92,7 @@ with DAG(
     
     test_task = BashOperator(
         task_id="test_tasks",
-        bash_command="df -h",
+        bash_command="ls /mnt/azure",
         executor_config={"KubernetesExecutor": {
                 "image": "ubuntu:latest",
                 "volumes": [
@@ -106,8 +106,8 @@ with DAG(
                 ],
                 "volume_mounts": [
                     {
-                        'mountPath': "/mnt/azure/",
-                        'name': "airflow2" 
+                        "name": "airflow2",
+                        "mountPath": "/mnt/azure/"
                     }
                 ]
             }
