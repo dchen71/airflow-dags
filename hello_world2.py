@@ -88,28 +88,6 @@ with DAG(
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
     
-    echo_files = KubernetesPodOperator(
-        task_id="echo_circe",
-        name = "kubetest",
-        namespace='default',
-        image="airflow1.azurecr.io/beaver:18.04",
-        cmds=["/bin/bash", "-c", "cat /mnt/azure/circe.txt | while read line; do echo $line; done"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
-    )
-
-    write_test = KubernetesPodOperator(
-        task_id="write_test",
-        name = "kubetest",
-        namespace='default',
-        image="airflow1.azurecr.io/beaver:18.04",
-        cmds=["/bin/bash", "-c", "touch /mnt/azure/cat.txt"],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
-    )
-
     create_files = KubernetesPodOperator(
         task_id="create_files",
         name = "kubetest",
@@ -133,6 +111,6 @@ with DAG(
     )
 
     # Order for pipeline to do stuff
-    ## ls mount > echo > write_test > create files > write to files
-    start_task >> echo_files >> write_test >> create_files >> write_files
+    ## ls mount > create files > write to files
+    start_task >> create_files >> write_files
     
