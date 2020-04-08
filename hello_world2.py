@@ -101,7 +101,7 @@ with DAG(
     )
 
     write_files = KubernetesPodOperator(
-        task_id="pwd",
+        task_id="write_files",
         name = "kubetest",
         namespace='default',
         image="airflow1.azurecr.io/dingo:19.04",
