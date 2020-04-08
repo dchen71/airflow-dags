@@ -26,6 +26,8 @@ from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOpera
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.bash_operator import BashOperator
+
 
 ##
 # Persistent Volume Configuration
@@ -88,6 +90,27 @@ with DAG(
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
     
+    test_task = PythonOperator(
+        task_id="test_tasks",
+        bash_command="df -h",
+        executor_config={"KubernetesExecutor": {
+                "image": "ubuntu:latest",
+                "volumes": [
+                    {
+                        "name": 'airflow2', 
+                        "persistentVolumeClaim": {"claimName": 'pvc-competitions-airflow2'}
+                    }
+                ],
+                "volume_mounts": [
+                    {
+                        'mountPath': "/mnt/azure/",
+                        'name': "airflow2" 
+                    }
+                ]
+            }
+        }
+    )
+
     def command_tasks():
         """
         Read file and trigger dags to build hellow worlds
@@ -146,5 +169,5 @@ with DAG(
 
     # Order for pipeline to do stuff
     ## start pipeline > list of 2 tasks > converge
-    start_task >> master_task
+    start_task >> test_task >> master_task
     
