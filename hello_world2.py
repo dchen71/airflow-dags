@@ -90,87 +90,31 @@ with DAG(
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
     
-    test_task = BashOperator(
-        task_id="test_tasks",
-        bash_command="ls /mnt/azure",
-        executor_config={"KubernetesExecutor": {
-                "image": "ubuntu:latest",
-                "volumes": [
-                    {
-                        "name": "airflow2", 
-                        "persistentVolumeClaim": 
-                        {
-                            "claimName": "pvc-competitions-airflow2"
-                        }
-                    }
-                ],
-                "volume_mounts": [
-                    {
-                        "name": "airflow2",
-                        "mountPath": "/mnt/azure/"
-                    }
-                ]
-            }
-        }
-    )
-
-    def command_tasks():
-        """
-        Read file and trigger dags to build hellow worlds
-        """
-        print(os.listdir("/mnt/azure/"))
-        circe = open("/mnt/azure/circe.txt", "r")
-        for line in circe:
-            print(line)
-
-    master_task = PythonOperator(
-        task_id="trigger_tasks",
-        python_callable=command_tasks,
-        executor_config={"KubernetesExecutor": {
-                "image": "python:latest",
-                "volumes": [
-                    {
-                        "name": 'airflow2', 
-                        "persistentVolumeClaim": {"claimName": 'pvc-competitions-airflow2'}
-                    }
-                ],
-                "volume_mounts": [
-                    {
-                        'mountPath': "/mnt/azure/",
-                        'name': "airflow2" 
-                    }
-                ]
-            }
-        }
-    )
-
-    example_task2 = KubernetesPodOperator(
-        task_id="pwd",
+    create_files = KubernetesPodOperator(
+        task_id="create_files",
         name = "kubetest",
         namespace='default',
-        image="ubuntu:18.04",
-        cmds=["pwd"],
-        #volumes=[volume],
-        #volume_mounts=[volume_mount],
+        image="airflow1.azurecr.io/beaver:18.04",
+        cmds=["/bin/bash", "-c"],
+        args=["cat /mnt/azure/circe.txt | while read line; do touch /mnt/azure/$line.txt; done"],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
         is_delete_operator_pod=True
     )
 
-    example_task3 = KubernetesPodOperator(
-        task_id="echo",
+    write_files = KubernetesPodOperator(
+        task_id="pwd",
         name = "kubetest",
         namespace='default',
-        image="ubuntu:18.04",
-        cmds=["echo"],
-        arguments=["hello world", '{{params.example_var}}', '$(EXAMPLE_VAR2)'],
-        #volumes=[volume],
-        #volume_mounts=[volume_mount],
-        is_delete_operator_pod=True,
-        #secrets = [secret_env],
-        params={'example_var': 'roger'},
-        env_vars={'EXAMPLE_VAR2': 'roger'}
+        image="airflow1.azurecr.io/dingo:19.04",
+        cmds=["/bin/bash", "-c"],
+        args=["cat /mnt/azure/circe.txt | while read line; do echo $line >> /mnt/azure/$line.txt; done"],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True
     )
 
     # Order for pipeline to do stuff
-    ## start pipeline > list of 2 tasks > converge
-    start_task >> test_task >> master_task
+    ## ls mount > create files > write to files
+    start_task >> create_files >> write_files
     
