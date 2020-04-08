@@ -86,7 +86,7 @@ with DAG(
         arguments=["/mnt/azure"],
         volumes=[volume],
         volume_mounts=[volume_mount],
-        is_delete_operator_pod=False,
+        is_delete_operator_pod=True,
         resources={'limit_memory': '256Mi', 'limit_cpu': 0.3}
     )
     
