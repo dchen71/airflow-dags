@@ -97,7 +97,7 @@ with DAG(
         args=["cat /mnt/azure/circe.txt | while read line; do touch /mnt/azure/$line.txt; done"],
         volumes=[volume],
         volume_mounts=[volume_mount],
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     write_files = KubernetesPodOperator(
