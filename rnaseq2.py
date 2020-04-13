@@ -96,6 +96,18 @@ with DAG(
             xcom_push = True
             )
 
+    # Create base folder for sample
+    create_base_output_dir = KubernetesPodOperator(
+        task_id="create_output_dir",
+        name = "rnaseq2_create_output_dir",
+        namespace='default',
+        image="ubuntu",
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
+        volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
+        volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
+        is_delete_operator_pod=True
+    )    
+
     # STAR
     ## Create star empty directory
     create_star_dir = KubernetesPodOperator(
@@ -103,7 +115,7 @@ with DAG(
         name = "rnaseq2_create_star_dir",
         namespace='default',
         image="ubuntu",
-        cmds=["/bin/bash -c mkdir /mnt/output/star"],
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -119,7 +131,7 @@ with DAG(
         "--runThreadN $(nproc) " +
         "--readFilesCommand zcat " + 
         "--readFilesIn {{R1}} {{R2}} " + 
-        "--outputNamePrefix /mnt/output/star " +
+        "--outputNamePrefix /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star " +
         "--outSAMunmapped Within "  +
         "--outSAMtype BAM SortedByCoordinate " +
         "--quantMode TranscriptomeSAM GeneCounts"],
@@ -135,7 +147,7 @@ with DAG(
         name = "rnaseq2_create_salmon_dir",
         namespace='default',
         image="ubuntu",
-        cmds=["/bin/bash -c mkdir /mnt/output/salmon"],
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -154,7 +166,7 @@ with DAG(
         "-2 {{R2}} " +
         "-p ${nproc} " +
         "-g /rnaseq/ref/gencode.v4.annotation.gtf " +
-        "-o /mnt/output/salmon"],
+        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -167,7 +179,7 @@ with DAG(
         name = "rnaseq2_create_fastqc_dir",
         namespace='default',
         image="ubuntu",
-        cmds=["/bin/bash -c mkdir /mnt/output/fastqc"],
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -183,7 +195,7 @@ with DAG(
         "{{R1}} " +
         "{{R2}} " +
         "-t $(nproc) " +
-        "-o /mnt/output/fastqc"],
+        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -197,10 +209,10 @@ with DAG(
         image="samtools",
         cmds=["samtools sort " +
         "-n " +
-        "-o /mnt/output/out.sortedByName.bam " +
+        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam " +
         "-m 7G " +
         "-@ $(nproc) " +
-        "${output_dir}/star/Aligned.sortedByCoord.out.bam"],
+        "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -213,7 +225,7 @@ with DAG(
         name = "rnaseq2_create_qualimap_dir",
         namespace='default',
         image="ubuntu",
-        cmds=["/bin/bash -c mkdir /mnt/output/fastqc"],
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -226,11 +238,11 @@ with DAG(
         namespace='default',
         image="qualimap",
         cmds=["qualimap rnaseq " +
-        "-bam output_dir/out.sortedName.bam " +
+        "-bam /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedName.bam " +
         "-gtf /rnaseq/ref/gencode.v33.annotation.gtf  " +
         "--java-mem-size=60G " +
         "-pe " +
-        "-s -outdir output_dir/qualimap"],
+        "-s -outdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -243,7 +255,7 @@ with DAG(
         name = "rnaseq2_create_gatk_dir",
         namespace='default',
         image="gatk",
-        cmds=["/bin/bash -c mkdir output/tmp"],
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -258,9 +270,9 @@ with DAG(
         cmds=["gatk " +
         "--java-options \"-Xmx7G\" " +
         "EstimateLibraryComplexity " +
-        "-I ${output_dir}/star/Aligned.sortedByCoord.out.bam " +
+        "-I /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam " +
         "-pe " +
-        "--TMP_DIR ${OUTPUT_DIR}/tmp"],
+        "--TMP_DIR /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -273,7 +285,7 @@ with DAG(
         name = "rnaseq2_create_rseqc_dir",
         namespace='default',
         image="ubuntu",
-        cmds=["/bin/bash -c mkdir /mnt/output/rseqc"],
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
@@ -287,11 +299,11 @@ with DAG(
         image="rseqc",
         cmds=["geneBody_coverage.py " +
         "-r /rnaseq/ref/gencode.v33.annotation.bed " +
-        "-i ${output_dir}/star/Aligned.sortedByCoord.out.bam " +
-        "-o ${output_dir}/rseqc"],
+        "-i /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam " +
+        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, input_sample_mount, output_mount],
         is_delete_operator_pod=True
     )
 
-    parse_filename >> create_star_dir >> star >> create_salmon_dir >> run_salmon >> create_fastqc_dir >> run_fastqc >> run_samtools >> create_qualimap_dir >> run_qualimap >> create_gatk_dir >> run_gatk >> create_rseqc_dir >> run_rseqc
+    parse_filename >> create_base_output_dir >> create_star_dir >> star >> create_salmon_dir >> run_salmon >> create_fastqc_dir >> run_fastqc >> run_samtools >> create_qualimap_dir >> run_qualimap >> create_gatk_dir >> run_gatk >> create_rseqc_dir >> run_rseqc
