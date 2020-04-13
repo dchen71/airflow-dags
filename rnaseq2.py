@@ -130,7 +130,7 @@ with DAG(
         cmds=["star --genomeDir /rnaseq/ref/star_gencode_v33_index " + 
         "--runThreadN $(nproc) " +
         "--readFilesCommand zcat " + 
-        "--readFilesIn {{R1}} {{R2}} " + 
+        "--readFilesIn {{ dag_run.conf['read1_name'] }} {{ dag_run.conf['read2_name'] }} " + 
         "--outputNamePrefix /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star " +
         "--outSAMunmapped Within "  +
         "--outSAMtype BAM SortedByCoordinate " +
@@ -162,8 +162,8 @@ with DAG(
         cmds=["salmon quant " +
         "-i /rnaseq/ref/salmon_gencode_v33_index " +
         "-l A " +
-        "-1 {{R1}} " +
-        "-2 {{R2}} " +
+        "-1 {{ dag_run.conf['read1_name'] }} " +
+        "-2 {{ dag_run.conf['read2_name'] }} " +
         "-p ${nproc} " +
         "-g /rnaseq/ref/gencode.v4.annotation.gtf " +
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
@@ -192,8 +192,8 @@ with DAG(
         namespace='default',
         image="fastqc",
         cmds=["fastqc " +
-        "{{R1}} " +
-        "{{R2}} " +
+        "{{ dag_run.conf['read1_name'] }} " +
+        "{{ dag_run.conf['read2_name'] }} " +
         "-t $(nproc) " +
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[input_ref_config, input_data_volume, input_sample_volume, output_volume],
