@@ -8,7 +8,7 @@ from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
-
+from airflow.operators.bash_operator import BashOperator
 
 ##
 # Persistent Volume Configuration
