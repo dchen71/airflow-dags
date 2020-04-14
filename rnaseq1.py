@@ -102,5 +102,5 @@ with DAG(
 
     # Order for pipeline to do stuff
     ## ls mount > create files > write to files
-    rnaseq
+    rna_seq
     
