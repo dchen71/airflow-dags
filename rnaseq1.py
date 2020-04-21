@@ -14,6 +14,20 @@ from airflow.contrib.kubernetes.volume_mount import VolumeMount
 # Persistent Volume Configuration
 ##
 
+# Input sample table
+input_sample_config= {
+    'persistentVolumeClaim':
+      {
+        'claimName': 'pvc-competitions-airflow2'
+      }
+    }
+
+input_sample_volume = Volume(name='input-sample-mount', configs=input_sample_config)
+input_sample_mount = VolumeMount('input-sample-mount',
+                                mount_path='/rnaseq',
+                                sub_path=None,
+                                read_only=True)
+
 ## Reference Volume
 input_ref_config= {
     'persistentVolumeClaim':
@@ -41,22 +55,6 @@ input_data_mount = VolumeMount('input-mount',
                                 mount_path='/rnaseq/data',
                                 sub_path=None,
                                 read_only=True)
-
-
-# Input sample table
-input_sample_config= {
-    'persistentVolumeClaim':
-      {
-        'claimName': 'pvc-competitions-airflow2'
-      }
-    }
-
-input_sample_volume = Volume(name='input-sample-mount', configs=input_sample_config)
-input_sample_mount = VolumeMount('input-sample-mount',
-                                mount_path='/rnaseq',
-                                sub_path=None,
-                                read_only=True)
-
 
 ## Output Volume
 output_config= {
