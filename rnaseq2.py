@@ -9,6 +9,7 @@ from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOpera
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
 from airflow.operators.bash_operator import BashOperator
+from airflow.operators.dummy_operator import DummyOperator
 
 ##
 # Persistent Volume Configuration
@@ -290,5 +291,14 @@ with DAG(
         is_delete_operator_pod=True
     )
 
+    ## Dummies
+    do_alignments = DummyOperator(
+        task_id = "do_alignments"
+    )
+
+    do_qc_and_quantification = DummyOperator(
+        task_id = "do_qc_and_quantification"
+    )
+
     #parse_filename >> create_base_output_dir >> create_star_dir >> run_star >> create_salmon_dir >> run_salmon >> create_fastqc_dir >> run_fastqc >> run_samtools >> create_qualimap_dir >> run_qualimap >> create_gatk_dir >> run_gatk >> create_rseqc_dir >> run_rseqc
-    parse_filename >> [create_base_output_dir, create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir] >> [run_star, run_fastqc] >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap
+    parse_filename >> [create_base_output_dir, create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap
