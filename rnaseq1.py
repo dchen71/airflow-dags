@@ -93,8 +93,8 @@ with DAG(
         namespace='default',
         image="airflow1.azurecr.io/rnaseq:202003",
         cmds=["bash /rnaseq/rnaseq2020.sh"],
-        volumes=[input_ref_config, input_data_volume, '''input_sample_volume,''' output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, '''input_sample_mount,''' output_mount],
+        volumes=[input_ref_config, input_data_volume, output_volume],
+        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
         resources={'request_memory':'32Gi', 'request_cpu': '4000m'},
         is_delete_operator_pod=True
     )
