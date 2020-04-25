@@ -18,7 +18,7 @@ from airflow.contrib.kubernetes.volume_mount import VolumeMount
 input_sample_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'pvc-competitions-airflow2'
+        'claimName': 'pvc-input'
       }
     }
 
@@ -32,7 +32,7 @@ input_sample_mount = VolumeMount('input-sample-mount',
 input_ref_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'pvc-competitions-airflow2'
+        'claimName': 'pvc-references'
       }
     }
 
@@ -46,7 +46,7 @@ input_ref_mount = VolumeMount('reference-mount',
 input_data_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'pvc-competitions-airflow2'
+        'claimName': 'pvc-input'
       }
     }
 
@@ -60,7 +60,7 @@ input_data_mount = VolumeMount('input-mount',
 output_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'pvc-competitions-airflow3'
+        'claimName': 'pvc-output'
       }
     }
 
