@@ -23,7 +23,7 @@ input_sample_config= {
     }
 
 input_sample_volume = Volume(name='input-sample-mount', configs=input_sample_config)
-input_sample_mount = VolumeMount('input-sample-mount',
+input_sample_mount = VolumeMount(name='input-sample-mount',
                                 mount_path='/rnaseq',
                                 sub_path=None,
                                 read_only=True)
@@ -37,7 +37,7 @@ input_ref_config= {
     }
 
 input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
-input_ref_mount = VolumeMount('reference-mount',
+input_ref_mount = VolumeMount(name='reference-mount',
                               mount_path='/rnaseq/ref',
                               sub_path=None,
                               read_only=True)
@@ -51,7 +51,7 @@ input_data_config= {
     }
 
 input_data_volume = Volume(name='input-mount', configs=input_data_config)
-input_data_mount = VolumeMount('input-mount',
+input_data_mount = VolumeMount(name='input-mount',
                                 mount_path='/rnaseq/data',
                                 sub_path=None,
                                 read_only=True)
@@ -65,7 +65,7 @@ output_config= {
     }
 
 output_volume = Volume(name='output-mount', configs=output_config)
-output_mount = VolumeMount('output-mount',
+output_mount = VolumeMount(name='output-mount',
                             mount_path='/rnaseq/output',
                             sub_path=None,
                             read_only=False)
