@@ -95,7 +95,7 @@ with DAG(
         cmds=["bash /rnaseq/rnaseq2020.sh"],
         volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
-        resources={'request_memory':'30Gi', 'request_cpu': '4', 'limit_cpu': '4'},
+        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
         is_delete_operator_pod=True
     )
 
