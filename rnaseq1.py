@@ -57,20 +57,20 @@ input_data_mount = VolumeMount(name='input-mount',
                                 read_only=True)
 
 ### Output Volume
-#output_config= {
-#    'persistentVolumeClaim':
-#      {
-#        'claimName': 'pvc-output'
-#      }
-#    }
-#
-#output_volume = Volume(name='output-mount', configs=output_config)
-#output_mount = VolumeMount(name='output-mount',
-#                            mount_path='/rnaseq/output',
-#                            sub_path=None,
-#                            read_only=False)
-#
-#
+output_config= {
+    'persistentVolumeClaim':
+      {
+        'claimName': 'pvc-output'
+      }
+    }
+
+output_volume = Volume(name='output-mount', configs=output_config)
+output_mount = VolumeMount(name='output-mount',
+                            mount_path='/rnaseq/output',
+                            sub_path=None,
+                            read_only=False)
+
+
 args = {
     'owner': 'airflow',
     'start_date': days_ago(2)
@@ -93,8 +93,8 @@ with DAG(
         namespace='default',
         image="airflow1.azurecr.io/rnaseq:202003",
         cmds=["bash /rnaseq/rnaseq2020.sh"],
-        volumes=[input_sample_volume, input_ref_volume, input_data_volume],
-        volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount],
+        volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
+        volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
         resources={'request_memory':'30Gi', 'request_cpu': '4', 'limit_cpu': '4'},
         is_delete_operator_pod=True
     )
