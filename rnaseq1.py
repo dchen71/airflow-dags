@@ -53,7 +53,7 @@ input_data_config= {
 input_data_volume = Volume(name='input-mount', configs=input_data_config)
 input_data_mount = VolumeMount(name='input-mount',
                                 mount_path='/rnaseq/data',
-                                sub_path='data',
+                                sub_path=None,
                                 read_only=True)
 
 ### Output Volume
@@ -118,7 +118,7 @@ with DAG(
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["df"],
+        cmds=["ls"],
         arguments=["/rnaseq/data"],
         volumes=[input_data_volume],
         volume_mounts=[input_data_mount],
