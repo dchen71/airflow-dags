@@ -87,6 +87,18 @@ with DAG(
     tags=['example'],
 ) as dag:
 
+    mount_test = KubernetesPodOperator(
+        task_id="rna_seq_fat",
+        name = "rnaseq1_pipeline",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["pwd"],
+        volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
+        volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
+        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        is_delete_operator_pod=False
+    )
+
     rna_seq = KubernetesPodOperator(
         task_id="rna_seq_fat",
         name = "rnaseq1_pipeline",
@@ -101,5 +113,5 @@ with DAG(
 
     # Order for pipeline to do stuff
     ## ls mount > create files > write to files
-    rna_seq
+    mount_test >> rna_seq
     
