@@ -97,7 +97,7 @@ with DAG(
         volumes=[input_sample_volume],
         volume_mounts=[input_sample_mount],
         resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )
 
     mount_input_ref = KubernetesPodOperator(
@@ -110,7 +110,7 @@ with DAG(
         volumes=[input_ref_volume],
         volume_mounts=[input_ref_mount],
         resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )
 
     mount_data = KubernetesPodOperator(
@@ -123,7 +123,7 @@ with DAG(
         volumes=[input_data_volume],
         volume_mounts=[input_data_mount],
         resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )
 
     mount_output = KubernetesPodOperator(
@@ -136,7 +136,7 @@ with DAG(
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )
 
 
@@ -147,8 +147,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["df"],
         arguments=["-h"],
-        volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
-        volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
+        volumes=[input_ref_volume, input_data_volume, output_volume],
+        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
         resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
         is_delete_operator_pod=False
     )
