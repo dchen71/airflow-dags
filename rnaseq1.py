@@ -88,7 +88,7 @@ with DAG(
 ) as dag:
 
     mount_test = KubernetesPodOperator(
-        task_id="rna_seq_fat",
+        task_id="mount_test",
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
