@@ -39,7 +39,7 @@ input_ref_config= {
 input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
 input_ref_mount = VolumeMount(name='reference-mount',
                               mount_path='/rnaseq/ref',
-                              sub_path=None,
+                              sub_path='ref',
                               read_only=True)
 
 # Input Data Volume
@@ -53,7 +53,7 @@ input_data_config= {
 input_data_volume = Volume(name='input-mount', configs=input_data_config)
 input_data_mount = VolumeMount(name='input-mount',
                                 mount_path='/rnaseq/data',
-                                sub_path=None,
+                                sub_path='data',
                                 read_only=True)
 
 ### Output Volume
@@ -147,8 +147,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["df"],
         arguments=["-h"],
-        volumes=[input_ref_volume, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
+        volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
         resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
         is_delete_operator_pod=False
     )
