@@ -92,7 +92,7 @@ with DAG(
         name = "rnaseq1_pipeline",
         namespace='default',
         image="dchen71/rna:202003",
-        cmds=["/bin/bash /rnaseq/rnaseq2020.sh"],
+        cmds=["/bin/bash /rnaseq/scripts/rnaseq2020.sh"],
         #volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
         #volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
         resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
