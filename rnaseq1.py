@@ -91,7 +91,7 @@ with DAG(
         task_id="rna_seq_fat",
         name = "rnaseq1_pipeline",
         namespace='default',
-        image="airflow1.azurecr.io/rnaseq:202003",
+        image="dchen71/rna:202003",
         cmds=["/bin/bash /rnaseq/rnaseq2020.sh"],
         volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
