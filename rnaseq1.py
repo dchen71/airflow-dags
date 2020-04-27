@@ -87,8 +87,57 @@ with DAG(
     tags=['example'],
 ) as dag:
 
-    mount_test = KubernetesPodOperator(
-        task_id="mount_test",
+    mount_input_sample = KubernetesPodOperator(
+        task_id="mount_input_sample",
+        name = "rnaseq1_pipeline",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["df -h"],
+        volumes=[input_sample_volume],
+        volume_mounts=[input_sample_mount],
+        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        is_delete_operator_pod=False
+    )
+
+    mount_input_ref = KubernetesPodOperator(
+        task_id="mount_input_ref",
+        name = "rnaseq1_pipeline",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["df -h"],
+        volumes=[input_ref_volume],
+        volume_mounts=[input_ref_mount],
+        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        is_delete_operator_pod=False
+    )
+
+    mount_data = KubernetesPodOperator(
+        task_id="mount_data",
+        name = "rnaseq1_pipeline",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["df -h"],
+        volumes=[input_data_volume],
+        volume_mounts=[input_data_mount],
+        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        is_delete_operator_pod=False
+    )
+
+    mount_output = KubernetesPodOperator(
+        task_id="mount_output",
+        name = "rnaseq1_pipeline",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["df -h"],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
+        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        is_delete_operator_pod=False
+    )
+
+
+    mount_all = KubernetesPodOperator(
+        task_id="mount_all",
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
@@ -113,5 +162,5 @@ with DAG(
 
     # Order for pipeline to do stuff
     ## ls mount > create files > write to files
-    mount_test >> rna_seq
+    mount_input_sample >> mount_input_ref >> mount_data >> mount_output >> mount_all >> rna_seq
     
