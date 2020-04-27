@@ -92,10 +92,11 @@ with DAG(
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["df -h"],
+        cmds=["df"],
+        arguments=["-h"],
         volumes=[input_sample_volume],
         volume_mounts=[input_sample_mount],
-        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
         is_delete_operator_pod=False
     )
 
@@ -104,10 +105,11 @@ with DAG(
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["df -h"],
+        cmds=["df"],
+        arguments=["-h"],
         volumes=[input_ref_volume],
         volume_mounts=[input_ref_mount],
-        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
         is_delete_operator_pod=False
     )
 
@@ -116,10 +118,11 @@ with DAG(
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["df -h"],
+        cmds=["df"],
+        arguments=["-h"],
         volumes=[input_data_volume],
         volume_mounts=[input_data_mount],
-        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
         is_delete_operator_pod=False
     )
 
@@ -128,10 +131,11 @@ with DAG(
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["df -h"],
+        cmds=["df"],
+        arguments=["-h"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
-        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
         is_delete_operator_pod=False
     )
 
@@ -141,10 +145,11 @@ with DAG(
         name = "rnaseq1_pipeline",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["pwd"],
+        cmds=["df"],
+        arguments=["-h"],
         volumes=[input_sample_volume, input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_sample_mount, input_ref_mount, input_data_mount, output_mount],
-        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
         is_delete_operator_pod=False
     )
 
