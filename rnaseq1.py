@@ -14,20 +14,6 @@ from airflow.contrib.kubernetes.volume_mount import VolumeMount
 # Persistent Volume Configuration
 ##
 
-# Input sample table
-input_sample_config= {
-    'persistentVolumeClaim':
-      {
-        'claimName': 'pvc-input'
-      }
-    }
-
-input_sample_volume = Volume(name='input-sample-mount', configs=input_sample_config)
-input_sample_mount = VolumeMount(name='input-sample-mount',
-                                mount_path='/rnaseq',
-                                sub_path=None,
-                                read_only=True)
-
 ## Reference Volume
 input_ref_config= {
     'persistentVolumeClaim':
@@ -87,85 +73,18 @@ with DAG(
     tags=['example'],
 ) as dag:
 
-    mount_input_sample = KubernetesPodOperator(
-        task_id="mount_input_sample",
-        name = "rnaseq1_pipeline",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["ls"],
-        arguments=["/rnaseq"],
-        volumes=[input_sample_volume],
-        volume_mounts=[input_sample_mount],
-        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=True
-    )
-
-    mount_input_ref = KubernetesPodOperator(
-        task_id="mount_input_ref",
-        name = "rnaseq1_pipeline",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["ls"],
-        arguments=["/rnaseq/ref"],
-        volumes=[input_ref_volume],
-        volume_mounts=[input_ref_mount],
-        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=True
-    )
-
-    mount_data = KubernetesPodOperator(
-        task_id="mount_data",
-        name = "rnaseq1_pipeline",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["ls"],
-        arguments=["/rnaseq/data"],
-        volumes=[input_data_volume],
-        volume_mounts=[input_data_mount],
-        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=True
-    )
-
-    mount_output = KubernetesPodOperator(
-        task_id="mount_output",
-        name = "rnaseq1_pipeline",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["ls"],
-        arguments=["/rnaseq/output"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
-        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=True
-    )
-
-
-    mount_all = KubernetesPodOperator(
-        task_id="mount_all",
-        name = "rnaseq1_pipeline",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["df"],
-        arguments=["-h"],
-        volumes=[input_ref_volume, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
-        resources={'request_memory':'1Gi', 'limit_memory': '1Gi', 'request_cpu': '1', 'limit_cpu': '1'},
-        is_delete_operator_pod=False
-    )
-
     rna_seq = KubernetesPodOperator(
         task_id="rna_seq_fat",
         name = "rnaseq1_pipeline",
         namespace='default',
         image="dchen71/rna:202003",
-        #cmds=["/bin/bash /rnaseq/scripts/rnaseq2020.sh"],
         volumes=[input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
-        resources={'request_memory':'24Gi', 'limit_memory': '30G', 'request_cpu': '4', 'limit_cpu': '4'},
+        resources={'request_memory':'24Gi', 'limit_memory': '32Gi', 'request_cpu': '4', 'limit_cpu': '4'},
         is_delete_operator_pod=False
     )
 
     # Order for pipeline to do stuff
     ## ls mount > create files > write to files
-    mount_input_sample >> mount_input_ref >> mount_data >> mount_output >> mount_all >> rna_seq
+    rna_seq
     
