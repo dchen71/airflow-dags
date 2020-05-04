@@ -223,7 +223,7 @@ with DAG(
         task_id="run_qualimap",
         name = "rnaseq2_qualimap",
         namespace='default',
-        image="qualimap",
+        image="quay.io/biocontainers/qualimap:2.2.2d--1",
         cmds=["qualimap rnaseq " +
         "-bam /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam " +
         "-gtf /mnt/references/ref/gencode.v33.annotation.gtf  " +
