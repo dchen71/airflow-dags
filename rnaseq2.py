@@ -177,7 +177,7 @@ with DAG(
         task_id="run_fastqc",
         name = "rnaseq2_fastqc",
         namespace='default',
-        image="fastqc",
+        image="biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1",
         cmds=["fastqc " +
         "/mnt/data/{{ dag_run.conf['read1_name'] }} " +
         "/mnt/data/{{ dag_run.conf['read2_name'] }} " +
@@ -193,7 +193,7 @@ with DAG(
         task_id="run_samtools_sort",
         name = "rnaseq2_samtools",
         namespace='default',
-        image="samtools",
+        image="biocontainers/samtools:v1.9-4-deb_cv1",
         cmds=["samtools sort " +
         "-n " +
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam " +
