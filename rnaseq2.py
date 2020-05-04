@@ -15,47 +15,49 @@ from airflow.operators.dummy_operator import DummyOperator
 # Persistent Volume Configuration
 ##
 
+
 ## Reference Volume
 input_ref_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'pvc-competitions-airflow2'
+        'claimName': 'pvc-references'
       }
     }
 
 input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
-input_ref_mount = VolumeMount('reference-mount',
-                              mount_path='/mnt/references',
-                              sub_path=None,
+input_ref_mount = VolumeMount(name='reference-mount',
+                              mount_path='/rnaseq/ref',
+                              sub_path='ref',
                               read_only=True)
 
 # Input Data Volume
 input_data_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'pvc-competitions-airflow2'
+        'claimName': 'pvc-input'
       }
     }
 
 input_data_volume = Volume(name='input-mount', configs=input_data_config)
-input_data_mount = VolumeMount('input-mount',
-                                mount_path='/mnt/data',
+input_data_mount = VolumeMount(name='input-mount',
+                                mount_path='/rnaseq/data',
                                 sub_path=None,
                                 read_only=True)
 
-## Output Volume
+### Output Volume
 output_config= {
     'persistentVolumeClaim':
       {
-        'claimName': 'pvc-competitions-airflow3'
+        'claimName': 'pvc-output'
       }
     }
 
 output_volume = Volume(name='output-mount', configs=output_config)
-output_mount = VolumeMount('output-mount',
-                            mount_path='/mnt/output',
+output_mount = VolumeMount(name='output-mount',
+                            mount_path='/rnaseq/output',
                             sub_path=None,
                             read_only=False)
+
 
 
 args = {
@@ -87,9 +89,9 @@ with DAG(
         name = "rnaseq2_create_output_dir",
         namespace='default',
         image="ubuntu",
-        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )    
 
@@ -101,8 +103,8 @@ with DAG(
         namespace='default',
         image="ubuntu",
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )
 
@@ -133,8 +135,8 @@ with DAG(
         namespace='default',
         image="ubuntu",
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )
 
@@ -165,8 +167,8 @@ with DAG(
         namespace='default',
         image="ubuntu",
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )
 
@@ -211,8 +213,8 @@ with DAG(
         namespace='default',
         image="ubuntu",
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )
 
@@ -228,8 +230,8 @@ with DAG(
         "--java-mem-size=60G " +
         "-pe " +
         "-s -outdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[input_ref_config, output_volume],
+        volume_mounts=[input_ref_mount, output_mount],
         is_delete_operator_pod=True
     )
 
@@ -241,8 +243,8 @@ with DAG(
         namespace='default',
         image="gatk",
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )
 
@@ -258,8 +260,8 @@ with DAG(
         "-I /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam " +
         "-pe " +
         "--TMP_DIR /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[input_ref_config, output_volume],
+        volume_mounts=[input_ref_mount, output_mount],
         is_delete_operator_pod=True
     )
 
@@ -271,8 +273,8 @@ with DAG(
         namespace='default',
         image="ubuntu",
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )
 
@@ -286,8 +288,8 @@ with DAG(
         "-r /mnt/references/ref/gencode.v33.annotation.bed " +
         "-i /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam " +
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[input_ref_config, output_volume],
+        volume_mounts=[input_ref_mount, output_mount],
         is_delete_operator_pod=True
     )
 
@@ -301,4 +303,4 @@ with DAG(
     )
 
     #parse_filename >> create_base_output_dir >> create_star_dir >> run_star >> create_salmon_dir >> run_salmon >> create_fastqc_dir >> run_fastqc >> run_samtools >> create_qualimap_dir >> run_qualimap >> create_gatk_dir >> run_gatk >> create_rseqc_dir >> run_rseqc
-    parse_filename >> [create_base_output_dir, create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap
+    parse_filename >> create_base_output_dir >> [create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap
