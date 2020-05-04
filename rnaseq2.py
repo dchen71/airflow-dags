@@ -145,7 +145,7 @@ with DAG(
         task_id="run_salmon",
         name = "rnaseq2_salmon",
         namespace='default',
-        image="salmon",
+        image="combinelab/salmon:1.2.1",
         cmds=["salmon quant " +
         "-i /mnt/references/ref/salmon_gencode_v33_index " +
         "-l A " +
