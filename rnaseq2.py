@@ -24,11 +24,11 @@ input_ref_config= {
       }
     }
 
-input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
 input_ref_mount = VolumeMount(name='reference-mount',
                               mount_path='/mnt/references',
                               sub_path=None,
                               read_only=True)
+input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
 
 # Input Data Volume
 input_data_config= {
@@ -38,11 +38,11 @@ input_data_config= {
       }
     }
 
-input_data_volume = Volume(name='input-mount', configs=input_data_config)
 input_data_mount = VolumeMount(name='input-mount',
                                 mount_path='/mnt/data',
                                 sub_path=None,
                                 read_only=True)
+input_data_volume = Volume(name='input-mount', configs=input_data_config)
 
 ### Output Volume
 output_config= {
@@ -52,12 +52,11 @@ output_config= {
       }
     }
 
-output_volume = Volume(name='output-mount', configs=output_config)
 output_mount = VolumeMount(name='output-mount',
                             mount_path='/mnt/output',
                             sub_path=None,
                             read_only=False)
-
+output_volume = Volume(name='output-mount', configs=output_config)
 
 
 args = {
@@ -280,8 +279,8 @@ with DAG(
         "-I /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
         "-pe",
         "--TMP_DIR /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
-        volumes=[input_ref_config, output_volume],
-        volume_mounts=[input_ref_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         resources = {'limit_cpu': '8000m', 'request_memory': '8Gi'},
         is_delete_operator_pod=True
     )
