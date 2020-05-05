@@ -25,9 +25,9 @@ input_ref_config= {
     }
 
 input_ref_mount = VolumeMount(name='reference-mount',
-                              mount_path='/mnt/references',
-                              sub_path=None,
-                              read_only=True)
+    mount_path='/mnt/references',
+    sub_path=None,
+    read_only=True)
 input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
 
 # Input Data Volume
