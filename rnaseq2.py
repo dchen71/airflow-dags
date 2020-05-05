@@ -115,8 +115,8 @@ with DAG(
         task_id="run_star",
         name = "rnaseq2_star",
         namespace='default',
-        image="star",
-        cmds=["star --genomeDir /mnt/references/ref/star_gencode_v33_index " + 
+        image="quay.io/star:2.7.3a--0",
+        cmds=["/usr/local/star --genomeDir /mnt/references/ref/star_gencode_v33_index " + 
         "--runThreadN $(nproc) " +
         "--readFilesCommand zcat " + 
         "--readFilesIn /mnt/data/{{ dag_run.conf['read1_name'] }} /mnt/data{{ dag_run.conf['read2_name'] }} " + 
