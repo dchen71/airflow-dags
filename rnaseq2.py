@@ -204,8 +204,8 @@ with DAG(
         "-m 7G " +
         "-@ $(nproc) " +
         "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
         is_delete_operator_pod=True
     )
 
