@@ -188,11 +188,9 @@ with DAG(
         name = "rnaseq2_fastqc",
         namespace='default',
         image="biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1",
-        cmds=["fastqc " +
-        "/mnt/data/{{ dag_run.conf['read1_name'] }} " +
-        "/mnt/data/{{ dag_run.conf['read2_name'] }} " +
-        "-t $(nproc) " +
-        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
+        cmds=["fastqc"],
+        arguments=["/mnt/data/{{ dag_run.conf['read1_name'] }}","/mnt/data/{{ dag_run.conf['read2_name'] }}", 
+        "-t $(nproc)", "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[input_data_volume, output_volume],
         volume_mounts=[input_data_mount, output_mount],
         is_delete_operator_pod=False
