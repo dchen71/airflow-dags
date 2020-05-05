@@ -89,7 +89,7 @@ with DAG(
         name = "rnaseq2_create_output_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
+        cmds=["df -h; ls /mnt/output;mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
