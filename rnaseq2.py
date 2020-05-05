@@ -118,13 +118,14 @@ with DAG(
         name = "rnaseq2_star",
         namespace='default',
         image="quay.io/star:2.7.3a--0",
-        cmds=["/usr/local/star --genomeDir /mnt/references/ref/star_gencode_v33_index " + 
-        "--runThreadN $(nproc) " +
-        "--readFilesCommand zcat " + 
-        "--readFilesIn /mnt/data/{{ dag_run.conf['read1_name'] }} /mnt/data{{ dag_run.conf['read2_name'] }} " + 
-        "--outputNamePrefix /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star " +
-        "--outSAMunmapped Within "  +
-        "--outSAMtype BAM SortedByCoordinate " +
+        cmds=["/usr/local/star"], 
+        arguments = ["--genomeDir /mnt/references/ref/star_gencode_v33_index", 
+        "--runThreadN $(nproc)",
+        "--readFilesCommand zcat", 
+        "--readFilesIn /mnt/data/{{ dag_run.conf['read1_name'] }} /mnt/data{{ dag_run.conf['read2_name'] }}", 
+        "--outputNamePrefix /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star",
+        "--outSAMunmapped Within",
+        "--outSAMtype BAM SortedByCoordinate",
         "--quantMode TranscriptomeSAM GeneCounts"],
         volumes=[input_ref_config, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
