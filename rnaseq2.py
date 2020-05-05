@@ -204,7 +204,7 @@ with DAG(
         task_id="run_samtools_sort",
         name = "rnaseq2_samtools",
         namespace='default',
-        image="biocontainers/samtools:v1.9-4-deb_cv1",
+        image="quay.io/biocontainers/samtools:1.3--h0592bc0_3",
         cmds=["samtools sort " +
         "-n " +
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam " +
