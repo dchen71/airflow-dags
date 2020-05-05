@@ -126,6 +126,7 @@ with DAG(
         "--quantMode TranscriptomeSAM GeneCounts"],
         volumes=[input_ref_config, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi'},
         is_delete_operator_pod=True
     )
 
@@ -159,6 +160,7 @@ with DAG(
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[input_ref_config, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi'},
         is_delete_operator_pod=True
     )
 
@@ -269,6 +271,7 @@ with DAG(
         "--TMP_DIR /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[input_ref_config, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
+        resources = {'limit_cpu': '8000m', 'request_memory': '8Gi'},
         is_delete_operator_pod=True
     )
 
@@ -291,7 +294,7 @@ with DAG(
         task_id="run_rseqc",
         name = "rnaseq2_rseqc",
         namespace='default',
-        image="rseqc",
+        image="quay.io/biocontainers/rseqc:3.0.1--py37h516909a_1",
         cmds=["geneBody_coverage.py " +
         "-r /mnt/references/ref/gencode.v33.annotation.bed " +
         "-i /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam " +
