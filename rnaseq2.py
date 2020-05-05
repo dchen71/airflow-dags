@@ -84,34 +84,6 @@ with DAG(
             )
 
     # Create base folder for sample
-    t1 = KubernetesPodOperator(
-        task_id="t1",
-        name = "rnaseq2_create_output_dir",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["df"],
-        arguments=[" -h"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
-        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=False
-    )    
-
-    # Create base folder for sample
-    t2 = KubernetesPodOperator(
-        task_id="t2",
-        name = "rnaseq2_create_output_dir",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["ls"],
-        arguments=["/mnt/output"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
-        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=False
-    )    
-
-    # Create base folder for sample
     create_base_output_dir = KubernetesPodOperator(
         task_id="create_output_dir",
         name = "rnaseq2_create_output_dir",
@@ -122,7 +94,7 @@ with DAG(
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )    
 
     # STAR
@@ -132,7 +104,8 @@ with DAG(
         name = "rnaseq2_create_star_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
+        cmds=["mkdir"],
+        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
@@ -166,7 +139,8 @@ with DAG(
         name = "rnaseq2_create_salmon_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
+        cmds=["mkdir"],
+        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
@@ -200,7 +174,8 @@ with DAG(
         name = "rnaseq2_create_fastqc_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
+        cmds=["mkdir"],
+        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
@@ -247,7 +222,8 @@ with DAG(
         name = "rnaseq2_create_qualimap_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
+        cmds=["mkdir"],
+        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
@@ -279,7 +255,8 @@ with DAG(
         name = "rnaseq2_create_gatk_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
+        cmds=["mkdir"],
+        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
@@ -311,7 +288,8 @@ with DAG(
         name = "rnaseq2_create_rseqc_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
+        cmds=["mkdir"],
+        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '100Mi'},
