@@ -42,7 +42,7 @@ input_data_volume = Volume(name='input-mount', configs=input_data_config)
 input_data_mount = VolumeMount(name='input-mount',
                                 mount_path='/mnt/data',
                                 sub_path=None,
-                                read_only=False)
+                                read_only=Fals)e
 
 ### Output Volume
 output_config= {
@@ -188,7 +188,7 @@ with DAG(
         task_id="run_fastqc",
         name = "rnaseq2_fastqc",
         namespace='default',
-        image="biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1",
+        image="quay.io/biocontainers/fastqc:0.11.9--0",
         cmds=["fastqc"],
         arguments=["/mnt/data/{{ dag_run.conf['read1_name'] }}",
         "/mnt/data/{{ dag_run.conf['read2_name'] }}", 
