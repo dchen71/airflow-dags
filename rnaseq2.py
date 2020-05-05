@@ -129,7 +129,7 @@ with DAG(
         volumes=[input_ref_config, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
         resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi'},
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     # SALMON
@@ -195,7 +195,7 @@ with DAG(
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[input_data_volume, output_volume],
         volume_mounts=[input_data_mount, output_mount],
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     # Samtools sort
