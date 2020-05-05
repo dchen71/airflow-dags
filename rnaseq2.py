@@ -93,7 +93,7 @@ with DAG(
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )    
 
     # STAR
