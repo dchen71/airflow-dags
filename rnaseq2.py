@@ -26,7 +26,7 @@ input_ref_config= {
 
 input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
 input_ref_mount = VolumeMount(name='reference-mount',
-                              mount_path='/rnaseq/ref',
+                              mount_path='/mnt/references',
                               sub_path='ref',
                               read_only=True)
 
@@ -40,7 +40,7 @@ input_data_config= {
 
 input_data_volume = Volume(name='input-mount', configs=input_data_config)
 input_data_mount = VolumeMount(name='input-mount',
-                                mount_path='/rnaseq/data',
+                                mount_path='/mnt/data',
                                 sub_path=None,
                                 read_only=True)
 
@@ -54,7 +54,7 @@ output_config= {
 
 output_volume = Volume(name='output-mount', configs=output_config)
 output_mount = VolumeMount(name='output-mount',
-                            mount_path='/rnaseq/output',
+                            mount_path='/mnt/output',
                             sub_path=None,
                             read_only=False)
 
@@ -93,7 +93,7 @@ with DAG(
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )    
 
     # STAR
