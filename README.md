@@ -9,7 +9,7 @@ http://airflow-web2.ddns.net/admin/
 
 http://airflow-flower2.ddns.net/
 
-Storage Accounts (50GB_ : 
+Storage Accounts (50GB) : 
  
 * pvc-airflowstoreaccount1-container-logging
 * pvc-airflowstoreaccount1-container-output
@@ -21,5 +21,5 @@ https://github.com/CirceMcD/airflow-dags
 
 Guide: 
 
-airflow.apache.org
+airflow.apache.org/docs
 
