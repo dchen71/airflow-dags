@@ -153,13 +153,14 @@ with DAG(
         name = "rnaseq2_salmon",
         namespace='default',
         image="combinelab/salmon:1.2.1",
-        cmds=["salmon quant " +
-        "-i /mnt/references/ref/salmon_gencode_v33_index " +
-        "-l A " +
-        "-1 /mnt/data/{{ dag_run.conf['read1_name'] }} " +
-        "-2 /mnt/data/{{ dag_run.conf['read2_name'] }} " +
-        "-p ${nproc} " +
-        "-g /mnt/references/ref/gencode.v4.annotation.gtf " +
+        cmds=["salmon"],
+        arguments=["quant",
+        "-i /mnt/references/ref/salmon_gencode_v33_index", 
+        "-l A", 
+        "-1 /mnt/data/{{ dag_run.conf['read1_name'] }}", 
+        "-2 /mnt/data/{{ dag_run.conf['read2_name'] }}",
+        "-p ${nproc}",
+        "-g /mnt/references/ref/gencode.v4.annotation.gtf",
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[input_ref_config, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
@@ -189,8 +190,10 @@ with DAG(
         namespace='default',
         image="biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1",
         cmds=["fastqc"],
-        arguments=["/mnt/data/{{ dag_run.conf['read1_name'] }}","/mnt/data/{{ dag_run.conf['read2_name'] }}", 
-        "-t $(nproc)", "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
+        arguments=["/mnt/data/{{ dag_run.conf['read1_name'] }}",
+        "/mnt/data/{{ dag_run.conf['read2_name'] }}", 
+        "-t $(nproc)", 
+        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[input_data_volume, output_volume],
         volume_mounts=[input_data_mount, output_mount],
         is_delete_operator_pod=False
