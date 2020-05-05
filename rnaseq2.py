@@ -313,5 +313,9 @@ with DAG(
         task_id = "do_qc_and_quantification"
     )
 
+    be_done = DummyOperator(
+        task_id = "done"
+    )
+
     #parse_filename >> create_base_output_dir >> create_star_dir >> run_star >> create_salmon_dir >> run_salmon >> create_fastqc_dir >> run_fastqc >> run_samtools >> create_qualimap_dir >> run_qualimap >> create_gatk_dir >> run_gatk >> create_rseqc_dir >> run_rseqc
-    parse_filename >> create_base_output_dir >> [create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap
+    parse_filename >> create_base_output_dir >> [create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap >> be_done
