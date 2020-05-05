@@ -262,7 +262,7 @@ with DAG(
         task_id="run_gatk",
         name = "rnaseq2_gatk",
         namespace='default',
-        image="gatk",
+        image="broadinstitute/gatk:4.1.7.0",
         cmds=["gatk " +
         "--java-options \"-Xmx7G\" " +
         "EstimateLibraryComplexity " +
