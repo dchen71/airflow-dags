@@ -238,11 +238,12 @@ with DAG(
         name = "rnaseq2_qualimap",
         namespace='default',
         image="quay.io/biocontainers/qualimap:2.2.2d--1",
-        cmds=["qualimap rnaseq " +
-        "-bam /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam " +
-        "-gtf /mnt/references/ref/gencode.v33.annotation.gtf  " +
-        "--java-mem-size=60G " +
-        "-pe " +
+        cmds=["qualimap"], 
+        arguments=["rnaseq",
+        "-bam /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam,"
+        "-gtf /mnt/references/ref/gencode.v33.annotation.gtf",
+        "--java-mem-size=60G",
+        "-pe",
         "-s -outdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
         volumes=[input_ref_config, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
@@ -271,11 +272,11 @@ with DAG(
         name = "rnaseq2_gatk",
         namespace='default',
         image="broadinstitute/gatk:4.1.7.0",
-        cmds=["gatk " +
-        "--java-options \"-Xmx7G\" " +
-        "EstimateLibraryComplexity " +
-        "-I /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam " +
-        "-pe " +
+        cmds=["gatk"],
+        arguments=["--java-options \"-Xmx7G\"",
+        "EstimateLibraryComplexity",
+        "-I /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
+        "-pe",
         "--TMP_DIR /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[input_ref_config, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
@@ -304,9 +305,9 @@ with DAG(
         name = "rnaseq2_rseqc",
         namespace='default',
         image="quay.io/biocontainers/rseqc:3.0.1--py37h516909a_1",
-        cmds=["geneBody_coverage.py " +
-        "-r /mnt/references/ref/gencode.v33.annotation.bed " +
-        "-i /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam " +
+        cmds=["geneBody_coverage.py"],
+        arguments=["-r /mnt/references/ref/gencode.v33.annotation.bed",
+        "-i /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
         volumes=[input_ref_config, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
