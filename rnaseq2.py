@@ -249,7 +249,7 @@ with DAG(
         task_id="create_gatk_directory",
         name = "rnaseq2_create_gatk_dir",
         namespace='default',
-        image="gatk",
+        image="ubuntu:18.04",
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
