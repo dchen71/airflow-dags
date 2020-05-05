@@ -25,9 +25,9 @@ input_ref_config= {
     }
 
 input_ref_mount = VolumeMount(name='reference-mount',
-    mount_path='/mnt/references',
-    sub_path=None,
-    read_only=True)
+                              mount_path='/mnt/references',
+                              sub_path=None,
+                              read_only=True)
 input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
 
 # Input Data Volume
@@ -91,7 +91,7 @@ with DAG(
         cmds=["df"],
         arguments=["-h"],
         volumes=[input_ref_volume],
-        volume_mounts=[input_ref_volume],
+        volume_mounts=[input_ref_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )    
