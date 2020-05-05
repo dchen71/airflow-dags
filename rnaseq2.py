@@ -84,6 +84,32 @@ with DAG(
             )
 
     # Create base folder for sample
+    t1 = KubernetesPodOperator(
+        task_id="t1",
+        name = "rnaseq2_create_output_dir",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["df -h"],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
+        is_delete_operator_pod=False
+    )    
+
+    # Create base folder for sample
+    t2 = KubernetesPodOperator(
+        task_id="t2",
+        name = "rnaseq2_create_output_dir",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["ls /mnt/output"],
+        volumes=[output_volume],
+        volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
+        is_delete_operator_pod=False
+    )    
+
+    # Create base folder for sample
     create_base_output_dir = KubernetesPodOperator(
         task_id="create_output_dir",
         name = "rnaseq2_create_output_dir",
