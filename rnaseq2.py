@@ -92,6 +92,7 @@ with DAG(
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )    
 
@@ -105,6 +106,7 @@ with DAG(
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
 
@@ -137,6 +139,7 @@ with DAG(
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
 
@@ -169,6 +172,7 @@ with DAG(
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
 
@@ -215,6 +219,7 @@ with DAG(
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
 
@@ -232,6 +237,7 @@ with DAG(
         "-s -outdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
         volumes=[input_ref_config, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
 
@@ -245,6 +251,7 @@ with DAG(
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
 
@@ -275,6 +282,7 @@ with DAG(
         cmds=["/bin/bash -c mkdir /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '100Mi'},
         is_delete_operator_pod=True
     )
 
