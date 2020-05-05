@@ -205,11 +205,12 @@ with DAG(
         name = "rnaseq2_samtools",
         namespace='default',
         image="quay.io/biocontainers/samtools:1.3--h0592bc0_3",
-        cmds=["samtools sort " +
-        "-n " +
-        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam " +
-        "-m 7G " +
-        "-@ $(nproc) " +
+        cmds=["samtools"],
+        arguments=["sort",
+        "-n",
+        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam",
+        "-m 7G",
+        "-@ $(nproc)",
         "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
