@@ -42,7 +42,7 @@ input_data_volume = Volume(name='input-mount', configs=input_data_config)
 input_data_mount = VolumeMount(name='input-mount',
                                 mount_path='/mnt/data',
                                 sub_path=None,
-                                read_only=Fals)e
+                                read_only=True)
 
 ### Output Volume
 output_config= {
