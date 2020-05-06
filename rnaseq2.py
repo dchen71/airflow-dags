@@ -248,7 +248,7 @@ with DAG(
         "--java-mem-size=60G",
         "-pe",
         "-s", "-outdir", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
-        volumes=[input_ref_config, output_volume],
+        volumes=[input_ref_volume, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=False
@@ -312,7 +312,7 @@ with DAG(
         arguments=["-r", "/mnt/references/ref/gencode.v33.annotation.bed",
         "-i", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
         "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
-        volumes=[input_ref_mount, output_volume],
+        volumes=[input_ref_volume, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
         is_delete_operator_pod=False
     )
