@@ -279,7 +279,7 @@ with DAG(
         arguments=["--java-options", "-Xmx7G",
         "EstimateLibraryComplexity",
         "-I", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
-        "-pe",
+        #"-pe",
         "--TMP_DIR", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
