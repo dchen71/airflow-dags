@@ -228,7 +228,7 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["mkdir"],
-        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
+        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
