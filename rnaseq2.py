@@ -315,7 +315,7 @@ with DAG(
         "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
         volumes=[input_ref_volume, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )
 
     ## Dummies
