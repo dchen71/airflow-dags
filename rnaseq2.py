@@ -17,25 +17,46 @@ from airflow.operators.dummy_operator import DummyOperator
 
 
 ## Reference Volume
+input_ref_config= {
+    'persistentVolumeClaim':
+      {
+        'claimName': 'pvc-references'
+      }
+    }
+
 input_ref_mount = VolumeMount(name='reference-mount',
                               mount_path='/mnt/references',
                               sub_path=None,
                               read_only=True)
-input_ref_volume = Volume(name='reference-mount', configs={'persistentVolumeClaim':{'claimName': 'pvc-references'}})
+input_ref_volume = Volume(name='reference-mount', configs=input_ref_config)
 
 # Input Data Volume
+input_data_config= {
+    'persistentVolumeClaim':
+      {
+        'claimName': 'pvc-input'
+      }
+    }
+
 input_data_mount = VolumeMount(name='input-mount',
                                 mount_path='/mnt/data',
                                 sub_path=None,
                                 read_only=True)
-input_data_volume = Volume(name='input-mount', configs={'persistentVolumeClaim':{'claimName': 'pvc-input'}})
+input_data_volume = Volume(name='input-mount', configs=input_data_config)
 
 ### Output Volume
+output_config= {
+    'persistentVolumeClaim':
+      {
+        'claimName': 'pvc-output'
+      }
+    }
+
 output_mount = VolumeMount(name='output-mount',
                             mount_path='/mnt/output',
                             sub_path=None,
                             read_only=False)
-output_volume = Volume(name='output-mount', configs={'persistentVolumeClaim':{'claimName': 'pvc-output'}})
+output_volume = Volume(name='output-mount', configs=output_config)
 
 
 args = {
@@ -105,7 +126,7 @@ with DAG(
         "--outSAMunmapped", "Within",
         "--outSAMtype", "BAM", "SortedByCoordinate",
         "--quantMode", "TranscriptomeSAM GeneCounts"],
-        volumes=[input_ref_config, input_data_volume, output_volume],
+        volumes=[input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
         resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi'},
         is_delete_operator_pod=False
