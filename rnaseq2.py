@@ -283,7 +283,7 @@ with DAG(
         "--TMP_DIR", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
-        resources = {'limit_cpu': '8000m', 'request_memory': '8Gi'},
+        resources = {'request_cpu': '7000m', 'request_memory': '8Gi'},
         is_delete_operator_pod=False
     )
 
