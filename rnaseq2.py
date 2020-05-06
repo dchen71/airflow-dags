@@ -190,13 +190,14 @@ with DAG(
         namespace='default',
         image="quay.io/biocontainers/fastqc:0.11.9--0",
         cmds=["fastqc"],
-        arguments=["\-t $(nproc) " +
+        arguments=["-t 1" +
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc " +
         "/mnt/data/{{ dag_run.conf['read1_name'] }} " + 
         "/mnt/data/{{ dag_run.conf['read2_name'] }}" 
         ],
         volumes=[input_data_volume, output_volume],
         volume_mounts=[input_data_mount, output_mount],
+        resources = {'request_cpu': '1'},
         is_delete_operator_pod=False
     )
 
