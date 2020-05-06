@@ -164,7 +164,7 @@ with DAG(
         "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
-        resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi'},
+        resources = {'request_cpu': '7000m', 'request_memory': '29Gi'},
         is_delete_operator_pod=False
     )
 
