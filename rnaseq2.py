@@ -165,7 +165,7 @@ with DAG(
         volumes=[input_ref_config, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
         resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi'},
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     # FastQC
@@ -198,7 +198,7 @@ with DAG(
         volumes=[input_data_volume, output_volume],
         volume_mounts=[input_data_mount, output_mount],
         resources = {'request_cpu': '1'},
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     # Samtools sort
@@ -217,7 +217,7 @@ with DAG(
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_memory': '7Gi'},
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     # Qualimap
@@ -251,7 +251,7 @@ with DAG(
         volumes=[input_ref_config, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     # GATK
@@ -284,7 +284,7 @@ with DAG(
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'limit_cpu': '8000m', 'request_memory': '8Gi'},
-        is_delete_operator_pod=True
+        is_delete_operator_pod=False
     )
 
     # rseqc
