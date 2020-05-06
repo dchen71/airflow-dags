@@ -189,10 +189,11 @@ with DAG(
         name = "rnaseq2_fastqc",
         namespace='default',
         image="quay.io/biocontainers/fastqc:0.11.9--0",
-        cmds=["fastqc", "-t $(nproc)", "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
-        arguments=[
-        "/mnt/data/{{ dag_run.conf['read1_name'] }}",
-        "/mnt/data/{{ dag_run.conf['read2_name'] }}", 
+        cmds=["fastqc"],
+        arguments=["-t $(nproc) " +
+        "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc " +
+        "/mnt/data/{{ dag_run.conf['read1_name'] }} " + 
+        "/mnt/data/{{ dag_run.conf['read2_name'] }}" 
         ],
         volumes=[input_data_volume, output_volume],
         volume_mounts=[input_data_mount, output_mount],
