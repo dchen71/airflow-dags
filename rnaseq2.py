@@ -285,7 +285,7 @@ with DAG(
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '7000m', 'request_memory': '8Gi'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )
 
     # rseqc
