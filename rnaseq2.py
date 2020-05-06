@@ -243,7 +243,7 @@ with DAG(
         image="quay.io/biocontainers/qualimap:2.2.2d--1",
         cmds=["qualimap"], 
         arguments=["rnaseq",
-        "-bam", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam,"
+        "-bam", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/out.sortedByName.bam",
         "-gtf", "/mnt/references/ref/gencode.v33.annotation.gtf",
         "--java-mem-size=60G",
         "-pe",
