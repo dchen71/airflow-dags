@@ -311,7 +311,7 @@ with DAG(
         cmds=["geneBody_coverage.py"],
         arguments=["-r", "/mnt/references/ref/gencode.v33.annotation.bed",
         "-i", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
-        "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
+        "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc/"],
         volumes=[input_ref_volume, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
         is_delete_operator_pod=False
