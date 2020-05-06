@@ -250,7 +250,7 @@ with DAG(
         "-s", "-outdir", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
         volumes=[input_ref_volume, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
-        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
+        resources = {'request_cpu': '6', 'request_memory': '29Gi'},
         is_delete_operator_pod=False
     )
 
