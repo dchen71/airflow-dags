@@ -119,7 +119,7 @@ with DAG(
         image="quay.io/biocontainers/star:2.7.3a--0",
         cmds=["/usr/local/bin/STAR"], 
         arguments = ["--genomeDir", "/mnt/references/ref/star_gencode_v33_index", 
-        "--runThreadN", "$(nproc)",
+        "--runThreadN", "6",
         "--readFilesCommand", "zcat", 
         "--readFilesIn", "/mnt/data/{{ dag_run.conf['read1_name'] }}", "/mnt/data{{ dag_run.conf['read2_name'] }}", 
         "--outFileNamePrefix", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star",
