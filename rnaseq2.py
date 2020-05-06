@@ -116,7 +116,7 @@ with DAG(
         task_id="run_star",
         name = "rnaseq2_star",
         namespace='default',
-        image="quay.io/star:2.7.3a--0",
+        image="quay.io/biocontainers/star:2.7.3a--0",
         cmds=["/usr/local/star"], 
         arguments = ["--genomeDir", "/mnt/references/ref/star_gencode_v33_index", 
         "--runThreadN", "$(nproc)",
