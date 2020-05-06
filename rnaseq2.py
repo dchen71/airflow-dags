@@ -190,7 +190,7 @@ with DAG(
         namespace='default',
         image="quay.io/biocontainers/fastqc:0.11.9--0",
         cmds=["fastqc"],
-        arguments=["-t $(nproc) " +
+        arguments=[" -t $(nproc) " +
         "-o /mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc " +
         "/mnt/data/{{ dag_run.conf['read1_name'] }} " + 
         "/mnt/data/{{ dag_run.conf['read2_name'] }}" 
