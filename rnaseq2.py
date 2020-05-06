@@ -125,7 +125,7 @@ with DAG(
         "--outFileNamePrefix", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star",
         "--outSAMunmapped", "Within",
         "--outSAMtype", "BAM", "SortedByCoordinate",
-        "--quantMode", "TranscriptomeSAM GeneCounts"],
+        "--quantMode", "TranscriptomeSAM", "GeneCounts"],
         volumes=[input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
         resources = {'limit_cpu': '8000m', 'limit_memory': '29Gi','request_cpu': '6000m', 'request_memory': '26Gi'},
