@@ -117,7 +117,7 @@ with DAG(
         name = "rnaseq2_star",
         namespace='default',
         image="quay.io/biocontainers/star:2.7.3a--0",
-        cmds=["/usr/local/star"], 
+        cmds=["/usr/local/bin/STAR"], 
         arguments = ["--genomeDir", "/mnt/references/ref/star_gencode_v33_index", 
         "--runThreadN", "$(nproc)",
         "--readFilesCommand", "zcat", 
