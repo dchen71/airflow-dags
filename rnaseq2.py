@@ -159,7 +159,7 @@ with DAG(
         "-l", "A", 
         "-1", "/mnt/data/{{ dag_run.conf['read1_name'] }}", 
         "-2", "/mnt/data/{{ dag_run.conf['read2_name'] }}",
-        "-p", "$(nproc)",
+        "-p", "7",
         "-g", "/mnt/references/ref/gencode.v4.annotation.gtf",
         "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
         volumes=[input_ref_volume, input_data_volume, output_volume],
