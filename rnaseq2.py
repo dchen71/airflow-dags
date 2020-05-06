@@ -121,7 +121,7 @@ with DAG(
         arguments = ["--genomeDir", "/mnt/references/ref/star_gencode_v33_index", 
         "--runThreadN", "6",
         "--readFilesCommand", "zcat", 
-        "--readFilesIn", "/mnt/data/{{ dag_run.conf['read1_name'] }}", "/mnt/data{{ dag_run.conf['read2_name'] }}", 
+        "--readFilesIn", "/mnt/data/{{ dag_run.conf['read1_name'] }}", "/mnt/data/{{ dag_run.conf['read2_name'] }}", 
         "--outFileNamePrefix", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star",
         "--outSAMunmapped", "Within",
         "--outSAMtype", "BAM", "SortedByCoordinate",
