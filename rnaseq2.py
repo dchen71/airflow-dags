@@ -216,8 +216,8 @@ with DAG(
         "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
-        resources = {'request_memory': '7Gi'},
-        is_delete_operator_pod=False
+        resources = {'request_memory': '7Gi', 'request_cpu': '1'},
+        is_delete_operator_pod=True
     )
 
     # Qualimap
