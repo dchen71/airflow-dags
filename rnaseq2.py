@@ -128,7 +128,7 @@ with DAG(
         "--quantMode", "TranscriptomeSAM GeneCounts"],
         volumes=[input_ref_volume, input_data_volume, output_volume],
         volume_mounts=[input_ref_mount, input_data_mount, output_mount],
-        resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi'},
+        resources = {'limit_cpu': '8000m', 'limit_memory': '32Gi','request_cpu': '6000m', 'request_memory': '28Gi'},
         is_delete_operator_pod=False
     )
 
