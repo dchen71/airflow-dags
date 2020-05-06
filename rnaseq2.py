@@ -279,7 +279,7 @@ with DAG(
         arguments=["--java-options", "-Xmx7G",
         "EstimateLibraryComplexity",
         "-I", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
-        "-O", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/gatk/{{ti.xcom_pull(task_ids = 'parse_filename')}}",
+        "-O", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/gatk",
         #"-pe",
         "--TMP_DIR", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
         volumes=[output_volume],
