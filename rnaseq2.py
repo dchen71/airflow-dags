@@ -276,7 +276,7 @@ with DAG(
         namespace='default',
         image="broadinstitute/gatk:4.1.7.0",
         cmds=["gatk"],
-        arguments=["--java-options", "\"-Xmx7G\"",
+        arguments=["--java-options", "-Xmx7G",
         "EstimateLibraryComplexity",
         "-I", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
         "-pe",
