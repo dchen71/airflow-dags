@@ -96,12 +96,12 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["cp"],
-        arguments=["{{ dag_run.conf['read1_name'] }}", 
-        "{{ dag_run.conf['read2_name'] }}", 
+        arguments=["/mnt/data/{{ dag_run.conf['read1_name'] }}", 
+        "/mnt/data/{{ dag_run.conf['read2_name'] }}", 
         "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}"],
         volumes=[input_data_volume, temp_data_volume],
         volume_mounts=[input_data_mount, temp_data_mount],
-        resources = {'request_cpu': '2', 'request_memory': '10Gi'},
+        resources = {'request_cpu': '2', 'request_memory': '20Gi'},
         is_delete_operator_pod=True
     )
 
