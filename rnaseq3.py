@@ -74,7 +74,7 @@ with DAG(
 
     # Move to temp Azure File folder for processing
     create_temp = KubernetesPodOperator(
-        task_id="create_output_dir",
+        task_id="create_temp_dir",
         name = "rnaseq2_create_temp_dir",
         namespace='default',
         image="ubuntu:18.04",
@@ -90,7 +90,7 @@ with DAG(
     # Move to temp Azure File folder for processing
     move_temp_in = KubernetesPodOperator(
         task_id="move_data_in",
-        name = "rnaseq2_move_data_locally",
+        name = "rnaseq2_move_data_to_filesystem",
         namespace='default',
         image="ubuntu:18.04",
         cmds=["cp"],
