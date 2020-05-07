@@ -89,21 +89,21 @@ with DAG(
         do_xcom_push = True
     )
     
-    # Move to temp Azure File folder for processing
-    move_temp_in = KubernetesPodOperator(
-        task_id="move_data_in",
-        name = "rnaseq2_move_data_to_filesystem",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["cp"],
-        arguments=["/mnt/data/{{ dag_run.conf['read1_name'] }}", 
-        "/mnt/data/{{ dag_run.conf['read2_name'] }}", 
-        "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}"],
-        volumes=[input_data_volume, temp_data_volume],
-        volume_mounts=[input_data_mount, temp_data_mount],
-        resources = {'request_cpu': '2', 'request_memory': '20Gi'},
-        is_delete_operator_pod=True
-    )
+    ## Move to temp Azure File folder for processing
+    #move_temp_in = KubernetesPodOperator(
+    #    task_id="move_data_in",
+    #    name = "rnaseq2_move_data_to_filesystem",
+    #    namespace='default',
+    #    image="ubuntu:18.04",
+    #    cmds=["cp"],
+    #    arguments=["/mnt/data/{{ dag_run.conf['read1_name'] }}", 
+    #    "/mnt/data/{{ dag_run.conf['read2_name'] }}", 
+    #    "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}"],
+    #    volumes=[input_data_volume, temp_data_volume],
+    #    volume_mounts=[input_data_mount, temp_data_mount],
+    #    resources = {'request_cpu': '2', 'request_memory': '20Gi'},
+    #    is_delete_operator_pod=True
+    #)
 
     # Create base folder for sample
     create_base_output_dir = KubernetesPodOperator(
@@ -387,4 +387,4 @@ with DAG(
     )
 
     #parse_filename >> create_base_output_dir >> create_star_dir >> run_star >> create_salmon_dir >> run_salmon >> create_fastqc_dir >> run_fastqc >> run_samtools >> create_qualimap_dir >> run_qualimap >> create_gatk_dir >> run_gatk >> create_rseqc_dir >> run_rseqc
-    start >> [parse_filename, create_temp] >> move_temp_in >> create_base_output_dir >> [create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap >> copy_data_to_storage >> cleanup_temp >> be_done
+    start >> [parse_filename, create_temp] >> create_base_output_dir >> [create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap >> copy_data_to_storage >> cleanup_temp >> be_done
