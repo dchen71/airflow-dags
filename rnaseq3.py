@@ -38,6 +38,14 @@ temp_data_mount = VolumeMount(name='temp-mount',
                                 read_only=False)
 temp_data_volume = Volume(name='temp-mount', configs={'persistentVolumeClaim':{'claimName': 'pvc-airflow1datatemp'}})
 
+# Xcom Kubernetes mount
+kubepod_xcom_mount = VolumeMount(name='xcom_mount',
+                                 mount_path='/airflow/xcom',
+                                 sub_path=None,
+                                 read_only=False)
+kubepod_xcom_volume = Volume(name='xcom_mount', configs={'emptyDir': {}})
+
+
 ### Output Volume
 output_mount = VolumeMount(name='output-mount',
                             mount_path='/mnt/output',
@@ -82,8 +90,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["/bin/bash"],
         arguments=["-c","touch /airflow/xcom/return.json && printf '{\"dir\": \"%s\"}' $(mktemp -d -p /mnt/temp) > /airflow/xcom/return.json"],
-        volumes=[temp_data_volume],
-        volume_mounts=[temp_data_mount],
+        volumes=[kubepod_xcom_volume, temp_data_volume],
+        volume_mounts=[kubepod_xcom_mount, temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=False,
         xcom_push = True
