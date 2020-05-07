@@ -47,6 +47,10 @@ output_volume = Volume(name='output-mount', configs={'persistentVolumeClaim':{'c
 
 args = {
     'owner': 'airflow',
+    'email': ['asdpfjsdapofjspofjsdapojfspoj@sdfpojsdfpofjsd.io'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 2,
     'start_date': days_ago(2)
 }
 
