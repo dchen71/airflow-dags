@@ -4,6 +4,7 @@ RNASeq 3
 import os
 
 from airflow import DAG
+from datetime import timedelta
 from airflow.utils.dates import days_ago
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.contrib.kubernetes.volume import Volume
@@ -51,6 +52,7 @@ args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 2,
+    'retry_delay': timedelta(minutes = 5),
     'start_date': days_ago(2)
 }
 
