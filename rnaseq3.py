@@ -83,7 +83,7 @@ with DAG(
         volumes=[temp_data_volume],
         volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=True,
+        is_delete_operator_pod=False,
         xcom_push = True
     )
     
