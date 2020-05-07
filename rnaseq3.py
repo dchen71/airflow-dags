@@ -35,7 +35,7 @@ temp_data_mount = VolumeMount(name='temp-mount',
                                 mount_path='/tmp',
                                 sub_path=None,
                                 read_only=False)
-temp_data_volume = Volume(name='temp-mount', configs={'persistentVolumeClaim':{'claimName': 'pvc-temp'}})
+temp_data_volume = Volume(name='temp-mount', configs={'persistentVolumeClaim':{'claimName': 'pvc-airflow1datatemp'}})
 
 ### Output Volume
 output_mount = VolumeMount(name='output-mount',
