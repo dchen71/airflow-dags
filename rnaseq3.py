@@ -70,7 +70,7 @@ with DAG(
             task_id = 'parse_filename',
             bash_command = "filename={{ dag_run.conf['read1_name'] }}; echo ${filename%%.*}",
             xcom_push = True
-            )
+    )
 
     # Move to temp Azure File folder for processing
     create_temp = KubernetesPodOperator(
@@ -111,9 +111,9 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["mkdir"],
-        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        arguments=["{{ti.xcom_pull(task_ids = 'create_temp')}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )    
@@ -126,9 +126,9 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["mkdir"],
-        arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        arguments=["{{ti.xcom_pull(task_ids = 'create_temp')}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star"],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
@@ -148,8 +148,8 @@ with DAG(
         "--outSAMunmapped", "Within",
         "--outSAMtype", "BAM", "SortedByCoordinate",
         "--quantMode", "TranscriptomeSAM", "GeneCounts"],
-        volumes=[input_ref_volume, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[input_ref_volume, input_data_volume, temp_data_volume],
+        volume_mounts=[input_ref_mount, input_data_mount, temp_data_mount],
         resources = {'request_cpu': '7000m', 'request_memory': '29Gi'},
         is_delete_operator_pod=True
     )
@@ -163,8 +163,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["mkdir"],
         arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
@@ -184,8 +184,8 @@ with DAG(
         "-p", "7",
         "-g", "/mnt/references/ref/gencode.v33.annotation.gtf",
         "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/salmon"],
-        volumes=[input_ref_volume, input_data_volume, output_volume],
-        volume_mounts=[input_ref_mount, input_data_mount, output_mount],
+        volumes=[input_ref_volume, input_data_volume, temp_data_volume],
+        volume_mounts=[input_ref_mount, input_data_mount, temp_data_mount],
         resources = {'request_cpu': '7000m', 'request_memory': '29Gi'},
         is_delete_operator_pod=True
     )
@@ -199,8 +199,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["mkdir"],
         arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
@@ -217,8 +217,8 @@ with DAG(
         "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/fastqc",
         "-t", "1"
         ],
-        volumes=[input_data_volume, output_volume],
-        volume_mounts=[input_data_mount, output_mount],
+        volumes=[input_data_volume, temp_data_volume],
+        volume_mounts=[input_data_mount, temp_data_mount],
         resources = {'request_cpu': '1'},
         is_delete_operator_pod=True
     )
@@ -236,8 +236,8 @@ with DAG(
         "-m", "7G",
         "-@", "$(nproc)",
         "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_memory': '7Gi', 'request_cpu': '1'},
         is_delete_operator_pod=True
     )
@@ -251,8 +251,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["mkdir"],
         arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
@@ -270,8 +270,8 @@ with DAG(
         "--java-mem-size=60G",
         "-pe",
         "-s", "-outdir", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/qualimap"],
-        volumes=[input_ref_volume, output_volume],
-        volume_mounts=[input_ref_mount, output_mount],
+        volumes=[input_ref_volume, temp_data_volume],
+        volume_mounts=[input_ref_mount, temp_data_mount],
         resources = {'request_cpu': '6', 'request_memory': '29Gi'},
         is_delete_operator_pod=False
     )
@@ -285,8 +285,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["mkdir"],
         arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
@@ -304,8 +304,8 @@ with DAG(
         "-O", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/gatk",
         #"-pe",
         "--TMP_DIR", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/tmp"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '7000m', 'request_memory': '8Gi'},
         is_delete_operator_pod=True
     )
@@ -319,8 +319,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["mkdir"],
         arguments=["/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc"],
-        volumes=[output_volume],
-        volume_mounts=[output_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '100Mi'},
         is_delete_operator_pod=True
     )
@@ -335,13 +335,38 @@ with DAG(
         arguments=["-r", "/mnt/references/ref/gencode.v33.annotation.bed",
         "-i", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/star/Aligned.sortedByCoord.out.bam",
         "-o", "/mnt/output/{{ti.xcom_pull(task_ids = 'parse_filename')}}/rseqc/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
-        volumes=[input_ref_volume, output_volume],
-        volume_mounts=[input_ref_mount, output_mount],
+        volumes=[input_ref_volume, temp_data_volume],
+        volume_mounts=[input_ref_mount, temp_data_mount],
         is_delete_operator_pod=True
     )
 
     # Move data after done processing to long term blob storage
+    copy_data_to_storage = KubernetesPodOperator(
+        task_id="copy_data_to_storage",
+        name = "rnaseq2_upload_to_storage",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["cp"],
+        arguments=["-r", "{{ti.xcom_pull(task_ids = 'create_temp')}}", "/mnt/output"],
+        volumes=[temp_data_volume, temp_data_volume],
+        volume_mounts=[temp_data_mount, temp_data_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '100Mi'},
+        is_delete_operator_pod=True
+    )
 
+    # Delete file share temp data
+    cleanup_temp = KubernetesPodOperator(
+        task_id="cleanup_temp",
+        name = "rnaseq2_cleanup_temp",
+        namespace='default',
+        image="ubuntu:18.04",
+        cmds=["rm"],
+        arguments=["-rf", "{{ti.xcom_pull(task_ids = 'create_temp')}}"],
+        volumes=[temp_data_volume, temp_data_volume],
+        volume_mounts=[temp_data_mount, temp_data_mount],
+        resources = {'request_cpu': '50m', 'request_memory': '100Mi'},
+        is_delete_operator_pod=True
+    )
 
     ## Dummies
     do_alignments = DummyOperator(
@@ -361,4 +386,4 @@ with DAG(
     )
 
     #parse_filename >> create_base_output_dir >> create_star_dir >> run_star >> create_salmon_dir >> run_salmon >> create_fastqc_dir >> run_fastqc >> run_samtools >> create_qualimap_dir >> run_qualimap >> create_gatk_dir >> run_gatk >> create_rseqc_dir >> run_rseqc
-    start >> [parse_filename, create_temp] >> move_temp_in >> create_base_output_dir >> [create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap >> be_done
+    start >> [parse_filename, create_temp] >> move_temp_in >> create_base_output_dir >> [create_star_dir, create_salmon_dir, create_fastqc_dir, create_qualimap_dir, create_gatk_dir, create_rseqc_dir] >> do_alignments >> [run_star, run_fastqc] >> do_qc_and_quantification >> [run_rseqc, run_samtools, run_gatk, run_salmon]  >> run_qualimap >> copy_data_to_storage >> cleanup_temp >> be_done
