@@ -32,7 +32,7 @@ input_data_volume = Volume(name='input-mount', configs={'persistentVolumeClaim':
 
 # Temp Data Volume
 temp_data_mount = VolumeMount(name='temp-mount',
-                                mount_path='/tmp',
+                                mount_path='/mnt/temp',
                                 sub_path=None,
                                 read_only=False)
 temp_data_volume = Volume(name='temp-mount', configs={'persistentVolumeClaim':{'claimName': 'pvc-airflow1datatemp'}})
@@ -78,8 +78,8 @@ with DAG(
         name = "rnaseq2_create_temp_dir",
         namespace='default',
         image="ubuntu:18.04",
-        cmds=["mktemp"],
-        arguments=["-d"],
+        cmds=["printf"],
+        arguments=["'{\"dir\": \"%s\"}' $(mktemp -d -p /home/mobaxterm/Desktop/temp2) > /airflow/xcom/return.json"],
         volumes=[temp_data_volume],
         volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
