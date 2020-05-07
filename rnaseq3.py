@@ -97,8 +97,8 @@ with DAG(
         arguments=["{{ dag_run.conf['read1_name'] }}", 
         "{{ dag_run.conf['read2_name'] }}", 
         "{{ti.xcom_pull(task_ids = 'create_temp')}}"],
-        volumes=[temp_data_volume],
-        volume_mounts=[temp_data_mount],
+        volumes=[input_data_volume, temp_data_volume],
+        volume_mounts=[input_data_mount, temp_data_mount],
         resources = {'request_cpu': '2', 'request_memory': '10Gi'},
         is_delete_operator_pod=True,
         xcom_push = True
