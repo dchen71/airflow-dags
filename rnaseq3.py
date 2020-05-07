@@ -79,7 +79,7 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["printf"],
-        arguments=["'{\"dir\": \"\%s\"}' $(mktemp -d -p /mnt/temp) > /airflow/xcom/return.json"],
+        arguments=["'{\"dir\": \"\%s\"}'", "$(mktemp -d -p /mnt/temp)"],
         volumes=[temp_data_volume],
         volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
