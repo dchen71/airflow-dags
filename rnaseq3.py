@@ -100,8 +100,7 @@ with DAG(
         volumes=[input_data_volume, temp_data_volume],
         volume_mounts=[input_data_mount, temp_data_mount],
         resources = {'request_cpu': '2', 'request_memory': '10Gi'},
-        is_delete_operator_pod=True,
-        xcom_push = True
+        is_delete_operator_pod=True
     )
 
     # Create base folder for sample
