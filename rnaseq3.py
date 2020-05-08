@@ -274,7 +274,7 @@ with DAG(
         volumes=[input_ref_volume, temp_data_volume],
         volume_mounts=[input_ref_mount, temp_data_mount],
         resources = {'request_cpu': '6', 'request_memory': '29Gi'},
-        is_delete_operator_pod=False
+        is_delete_operator_pod=True
     )
 
     # GATK
