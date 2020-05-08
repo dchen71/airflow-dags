@@ -349,8 +349,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["cp"],
         arguments=["-r", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}", "/mnt/output"],
-        volumes=[temp_data_volume, temp_data_volume],
-        volume_mounts=[temp_data_mount, temp_data_mount],
+        volumes=[temp_data_volume, output_volume],
+        volume_mounts=[temp_data_mount, output_mount],
         resources = {'request_cpu': '2', 'request_memory': '20Gi'},
         is_delete_operator_pod=True
     )
@@ -363,8 +363,8 @@ with DAG(
         image="ubuntu:18.04",
         cmds=["rm"],
         arguments=["-rf", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}"],
-        volumes=[temp_data_volume, temp_data_volume],
-        volume_mounts=[temp_data_mount, temp_data_mount],
+        volumes=[temp_data_volume],
+        volume_mounts=[temp_data_mount],
         resources = {'request_cpu': '1', 'request_memory': '1Gi'},
         is_delete_operator_pod=True
     )
