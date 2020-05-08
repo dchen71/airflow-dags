@@ -51,14 +51,13 @@ with DAG(
         task_id="one_task",
         bash_command="df -h",
         executor_config={"KubernetesExecutor": {
-                "image": "airflow1.azurecr.io/python:v1", 
+                "image": "airflow:latest", 
                 "request_memory": '128Mi',
                 "limit_memory": '128Mi',
                 "volumes": [
                     {
                         "name": 'airflow1data', 
-                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
-                        "hostPath": {"path": "/tmp/"}
+                        "persistentVolumeClaim": {"claimName": 'airflow1data'}
                     }
                 ],
                 "volume_mounts": [
@@ -76,12 +75,11 @@ with DAG(
         task_id="two_task",
         bash_command="pwd",
         executor_config={"KubernetesExecutor": {
-                "image": "airflow1.azurecr.io/dogman:v1", 
+                "image": "airflow:latest", 
                 "volumes": [
                     {
                         "name": 'airflow1data', 
-                        "persistentVolumeClaim": {"claimName": 'airflow1data'},
-                        "hostPath": {"path": "/tmp/"}
+                        "persistentVolumeClaim": {"claimName": 'airflow1data'}
                     }
                 ],
                 "volume_mounts": [
@@ -98,12 +96,11 @@ with DAG(
         task_id="three_task",
         bash_command="ls /mnt/azure/",
         executor_config={"KubernetesExecutor": {
-                "image": "airflow1.azurecr.io/python:v1", 
+                "image": "airflow:latest", 
                 "volumes": [
                     {
                         "name": 'airflow1data', 
-                        #"persistentVolumeClaim": {"claimName": 'airflow1data'},
-                        "hostPath": {"path": "/tmp/"}
+                        "persistentVolumeClaim": {"claimName": 'airflow1data'}
                     }
                 ],
                 "volume_mounts": [
@@ -116,27 +113,7 @@ with DAG(
         }
     )
 
-    # You can mount volume or secret to the worker pod
-    four_task = BashOperator(
-        task_id="four_task",
-        bash_command="df -h",
-        executor_config={
-            "KubernetesExecutor": {
-                "volumes": [
-                    {
-                        "name": "airflow1data",
-                        "hostPath": {"path": "/tmp/"},
-                    },
-                ],
-                "volume_mounts": [
-                    {
-                        "mountPath": "/foo/",
-                        "name": "airflow1data",
-                    },
-                ]
-            }
-        }
-    )
+   
 
-    start_task >> [one_task, two_task, three_task, four_task]
+    start_task >> [one_task, two_task, three_task]
 
