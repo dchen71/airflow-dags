@@ -66,5 +66,5 @@ with DAG(
 
     # Order for pipeline to do stuff
     ## ls mount > create files > write to files
-    start_task >> bash_command
+    start_task >> hello_task
     
