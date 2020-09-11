@@ -76,7 +76,7 @@ with DAG(
         namespace='default',
         image="ubuntu:18.04",
         cmds=["mkdir"],
-        arguments=["-p", "/mnt/output/biao/{{ti.xcom_pull(task_ids='parse_filename')}}/fastqc"],
+        arguments=["-p", "/mnt/output/kevin/{{ti.xcom_pull(task_ids='parse_filename')}}/fastqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
@@ -93,7 +93,7 @@ with DAG(
         arguments=[
             "/mnt/input/rnaseq_data/{{ dag_run.conf['read1_name'] }}",
             "/mnt/input/rnaseq_data/{{ dag_run.conf['read2_name'] }}",
-            "-o", "/mnt/output/biao/{{ti.xcom_pull(task_ids='parse_filename')}}/fastqc",
+            "-o", "/mnt/output/kevin/{{ti.xcom_pull(task_ids='parse_filename')}}/fastqc",
             "-t", "2"
         ],
         volumes=[input_ref_volume, output_volume],
