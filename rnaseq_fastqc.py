@@ -91,8 +91,8 @@ with DAG(
         image="quay.io/biocontainers/fastqc:0.11.9--0",
         cmds=["fastqc"],
         arguments=[
-            "/mnt/data/rnaseq_data/{{ dag_run.conf['read1_name'] }}",
-            "/mnt/data/rnaseq_data/{{ dag_run.conf['read2_name'] }}",
+            "/mnt/input/rnaseq_data/{{ dag_run.conf['read1_name'] }}",
+            "/mnt/input/rnaseq_data/{{ dag_run.conf['read2_name'] }}",
             "-o", "/mnt/output/biao/{{ti.xcom_pull(task_ids='parse_filename')}}/fastqc",
             "-t", "2"
         ],
