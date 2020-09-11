@@ -53,7 +53,7 @@ args = {
 # RNA-seq using Fastqc
 ##
 with DAG(
-    dag_id='rnaseq_fastqc',
+    dag_id='rnaseq_fastqc_k',
     default_args=args,
     schedule_interval=None,
     tags=['fastqc'],
