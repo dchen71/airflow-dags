@@ -1,5 +1,5 @@
 """
-RNA-seq using Salmon
+FASTQC for RNA-seq
 """
 import os
 
@@ -50,13 +50,13 @@ args = {
 }
 
 ##
-# RNA-seq using Salmon
+# RNA-seq using Fastqc
 ##
 with DAG(
-    dag_id='rnaseq_salmon',
+    dag_id='rnaseq_fastqc',
     default_args=args,
     schedule_interval=None,
-    tags=['salmon'],
+    tags=['fastqc'],
 ) as dag:
 
     # Parse main file name without extensions
@@ -68,39 +68,37 @@ with DAG(
         xcom_push = True
     )
 
-    # Salmon
-    ## Create salmon empty directory
-    create_salmon_dir = KubernetesPodOperator(
-        task_id="create_salmon_dir",
-        name = "rnaseq_create_salmon_dir",
+    # FASTQC
+    ## Create fastqc empty directory
+    create_fastqc_dir = KubernetesPodOperator(
+        task_id="create_fastqc_dir",
+        name = "rnaseq_create_fastqc_dir",
         namespace='default',
         image="ubuntu:18.04",
         cmds=["mkdir"],
-        arguments=["-p", "/mnt/output/biao/{{ti.xcom_pull(task_ids='parse_filename')}}/salmon"],
+        arguments=["-p", "/mnt/output/biao/{{ti.xcom_pull(task_ids='parse_filename')}}/fastqc"],
         volumes=[output_volume],
         volume_mounts=[output_mount],
         resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
         is_delete_operator_pod=True
     )
 
-    ## Salmon
-    run_salmon = KubernetesPodOperator(
-        task_id="run_salmon",
-        name = "rnaseq_salmon",
+    ## FASTQC
+    run_fastqc = KubernetesPodOperator(
+        task_id="run_fastqc",
+        name = "rnaseq_fastqc",
         namespace='default',
-        image="combinelab/salmon:1.2.1",
-        cmds=["salmon"],
-        arguments=["quant",
-        "-i", "/mnt/input/salmon_gencode_v33_index", 
-        "-l", "A", 
-        "-1", "/mnt/input/rnaseq_data/{{ dag_run.conf['read1_name'] }}", 
-        "-2", "/mnt/input/rnaseq_data/{{ dag_run.conf['read2_name'] }}",
-        "-p", "7",
-        "-g", "/mnt/input/gencode.v33.annotation.gtf",
-        "-o", "/mnt/output/biao/{{ti.xcom_pull(task_ids='parse_filename')}}/salmon"],
+        image="quay.io/biocontainers/fastqc:0.11.9--0",
+        cmds=["fastqc"],
+        arguments=[
+            "/mnt/data/rnaseq_data/{{ dag_run.conf['read1_name'] }}",
+            "/mnt/data/rnaseq_data/{{ dag_run.conf['read2_name'] }}",
+            "-o", "/mnt/output/biao/{{ti.xcom_pull(task_ids='parse_filename')}}/fastqc",
+            "-t", "2"
+        ],
         volumes=[input_ref_volume, output_volume],
         volume_mounts=[input_ref_mount, output_mount],
-        resources = {'request_cpu': '7000m', 'request_memory': '29Gi'},
+        resources = {'request_cpu': '2'},
         is_delete_operator_pod=True
     )
 
@@ -109,4 +107,4 @@ with DAG(
         task_id = "done"
     )
 
-    parse_filename >> create_salmon_dir >> run_salmon >> be_done
+    parse_filename >> create_fastqc_dir >> run_fastqc >> be_done
