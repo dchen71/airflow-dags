@@ -88,7 +88,7 @@ with DAG(
         task_id="run_salmon",
         name = "rnaseq_salmon",
         namespace='default',
-        image="combinelab/salmon:1.2.1",
+        image="airflowpipelinesacr.azurecr.io/biao/salmon_v1.1.0",
         cmds=["salmon"],
         arguments=["quant",
         "-i", "/mnt/input/salmon_gencode_v33_index", 
