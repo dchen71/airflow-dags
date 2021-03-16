@@ -1,6 +1,18 @@
 """
 Humann3
 """
+
+# TODO: Pass in: Read1, Read2, ReferenceGenome, MetaCyc, UniRef50, ChocoPh1An
+# {
+#  "samples": {
+#      "sample1": ["read1", "read2"],
+#  },
+#  "reference_genome": "/path/to/reference/genome",
+#  "metabolic_pathways": "/path/to/metabolic", 
+#  "bacteria_genomes" : "/path/to/bac/genomes", 
+#  "protein_reference" : "/path/to/protein/reference"
+# }
+import json
 import os
 
 from airflow import DAG
@@ -15,7 +27,6 @@ from airflow.operators.dummy_operator import DummyOperator
 ##
 # Persistent Volume Configuration
 ##
-
 
 ## Reference Volume
 input_ref_mount = VolumeMount(name='reference-mount',
@@ -67,119 +78,129 @@ with DAG(
     tags=['alpha'],
 ) as dag:
 
-    # Parse main file name without extensions
-    parse_filename = BashOperator(
-            task_id = 'parse_filename',
-            bash_command = "filename={{ dag_run.conf['read1_name'] }}; echo ${filename%%.*}",
-            xcom_push = True
-    )
-
-    # Move to temp Azure File folder for processing
-    create_temp = KubernetesPodOperator(
-        task_id="create_temp",
-        name = "humann3_create_temp_dir",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["/bin/bash"],
-        arguments=["-c","printf '{\"dir\": \"%s\"}' $(mktemp -d -p /mnt/temp) > /airflow/xcom/return.json"],
-        volumes=[temp_data_volume],
-        volume_mounts=[temp_data_mount],
-        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=True,
-        do_xcom_push = True
-    )
+    samples_json = "{{ dag_run.conf['samples'] | json}}" # list of pairs of read1, read2
+    samples = json.loads(samples_json)
+    reference_genome = "{{ dag_run.conf['reference_genome'] }}"
+    metabolic_pathways = "{{ dag_run.conf['metabolic_pathways'] }}"
+    bacteria_genomes = "{{ dag_run.conf['bacteria_genomes'] }}"
+    protein_reference = "{{ dag_run.conf['protein_reference'] }}"
     
-    # Create base folder for sample
-    create_base_output_dir = KubernetesPodOperator(
-        task_id="create_output_dir",
-        name = "humann3_create_output_dir",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["mkdir"],
-        arguments=["{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
-        volumes=[temp_data_volume],
-        volume_mounts=[temp_data_mount],
-        resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
-        is_delete_operator_pod=True
-    )    
+    for (sample_name, (read1, read2)) in samples.items():
+        # Parse main file name without extensions
+        # parse_filename = BashOperator(
+        #         task_id = 'parse_filename',
+        #         bash_command = "filename={{ dag_run.conf['read1_name'] }}; echo ${filename%%.*}",
+        #         xcom_push = True
+        # )
+    
+        # Move to temp AWS for processing
+        create_temp = KubernetesPodOperator(
+            task_id="create_temp",
+            name = "humann3_create_temp_dir",
+            namespace='default',
+            image="ubuntu:18.04",
+            cmds=["/bin/bash"],
+            arguments=["-c","printf '{\"dir\": \"%s\"}' $(mktemp -d -p /mnt/temp) > /airflow/xcom/return.json"],
+            volumes=[temp_data_volume],
+            volume_mounts=[temp_data_mount],
+            resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
+            is_delete_operator_pod=True,
+            do_xcom_push = True
+        )
+        
+        # Create base folder for sample
+        create_base_output_dir = KubernetesPodOperator(
+            task_id="create_output_dir",
+            name = "humann3_create_output_dir",
+            namespace='default',
+            image="ubuntu:18.04",
+            cmds=["mkdir"],
+            arguments=["{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/" + sample_name],
+            #arguments=["{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}"],
+            volumes=[temp_data_volume],
+            volume_mounts=[temp_data_mount],
+            resources = {'request_cpu': '50m', 'request_memory': '50Mi'},
+            is_delete_operator_pod=True
+        )    
+    
+     #    ## Run KneadData
+     #    run_kneaddata = KubernetesPodOperator(
+     #        task_id="run_kneaddata",
+     #        name = "humann3_kneaddata",
+     #        namespace='default',
+     #        image="biobakery/kneaddata",
+     #        cmds=["kneaddata"],
+     #        arguments=["--input", "/mnt/data/{{ dag_run.conf['read1_name'] }}",
+    	# 	"--input", "/mnt/data/{{ dag_run.conf['read2_name'] }}",
+    	# 	"-db", "/mnt/reference/Homo_sapiens_db"
+     #        "--output", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}/kneaddata_output"
+     #        ],
+     #        volumes=[input_data_volume, temp_data_volume],
+     #        volume_mounts=[input_data_mount, temp_data_mount],
+     #        resources = {'request_cpu': '1'},
+     #        is_delete_operator_pod=True
+     #    )
+    	
+    	# ## Run KneadData
+     #    run_humann3 = KubernetesPodOperator(
+     #        task_id="run_humann3",
+     #        name = "humann3",
+     #        namespace='default',
+     #        image="biobakery/humann",
+     #        cmds=["humann"],
+     #        arguments=["--input", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}/kneaddata_output",
+     #        "--output", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}/humann_output"
+     #        ],
+     #        volumes=[input_data_volume, temp_data_volume],
+     #        volume_mounts=[input_data_mount, temp_data_mount],
+     #        resources = {'request_cpu': '1'},
+     #        is_delete_operator_pod=True
+     #    )
+    
+     #    # Move data after done processing to long term blob storage
+     #    copy_data_to_storage = KubernetesPodOperator(
+     #        task_id="copy_data_to_storage",
+     #        name = "humann3_upload_to_storage",
+     #        namespace='default',
+     #        image="ubuntu:18.04",
+     #        cmds=["cp"],
+     #        arguments=["-r", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}", "/mnt/output"],
+     #        volumes=[temp_data_volume, output_volume],
+     #        volume_mounts=[temp_data_mount, output_mount],
+     #        resources = {'request_cpu': '2', 'request_memory': '20Gi'},
+     #        is_delete_operator_pod=True
+     #    )
+    
+     #    # Delete file share temp data
+     #    cleanup_temp = KubernetesPodOperator(
+     #        task_id="cleanup_temp",
+     #        name = "humann3_cleanup_temp",
+     #        namespace='default',
+     #        image="ubuntu:18.04",
+     #        cmds=["rm"],
+     #        arguments=["-rf", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}"],
+     #        volumes=[temp_data_volume],
+     #        volume_mounts=[temp_data_mount],
+     #        resources = {'request_cpu': '1', 'request_memory': '1Gi'},
+     #        is_delete_operator_pod=True
+     #    )
 
-    ## Run KneadData
-    run_kneaddata = KubernetesPodOperator(
-        task_id="run_kneaddata",
-        name = "humann3_kneaddata",
-        namespace='default',
-        image="biobakery/kneaddata",
-        cmds=["kneaddata"],
-        arguments=["--input", "/mnt/data/{{ dag_run.conf['read1_name'] }}",
-		"--input", "/mnt/data/{{ dag_run.conf['read2_name'] }}",
-		"-db", "/mnt/reference/Homo_sapiens_db"
-        "--output", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}/kneaddata_output"
-        ],
-        volumes=[input_data_volume, temp_data_volume],
-        volume_mounts=[input_data_mount, temp_data_mount],
-        resources = {'request_cpu': '1'},
-        is_delete_operator_pod=True
-    )
-	
-	## Run KneadData
-    run_humann3 = KubernetesPodOperator(
-        task_id="run_humann3",
-        name = "humann3",
-        namespace='default',
-        image="biobakery/humann",
-        cmds=["humann"],
-        arguments=["--input", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}/kneaddata_output",
-        "--output", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}/humann_output"
-        ],
-        volumes=[input_data_volume, temp_data_volume],
-        volume_mounts=[input_data_mount, temp_data_mount],
-        resources = {'request_cpu': '1'},
-        is_delete_operator_pod=True
-    )
-
-    # Move data after done processing to long term blob storage
-    copy_data_to_storage = KubernetesPodOperator(
-        task_id="copy_data_to_storage",
-        name = "humann3_upload_to_storage",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["cp"],
-        arguments=["-r", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}/{{ti.xcom_pull(task_ids = 'parse_filename')}}", "/mnt/output"],
-        volumes=[temp_data_volume, output_volume],
-        volume_mounts=[temp_data_mount, output_mount],
-        resources = {'request_cpu': '2', 'request_memory': '20Gi'},
-        is_delete_operator_pod=True
-    )
-
-    # Delete file share temp data
-    cleanup_temp = KubernetesPodOperator(
-        task_id="cleanup_temp",
-        name = "humann3_cleanup_temp",
-        namespace='default',
-        image="ubuntu:18.04",
-        cmds=["rm"],
-        arguments=["-rf", "{{ti.xcom_pull(task_ids = 'create_temp')['dir']}}"],
-        volumes=[temp_data_volume],
-        volume_mounts=[temp_data_mount],
-        resources = {'request_cpu': '1', 'request_memory': '1Gi'},
-        is_delete_operator_pod=True
-    )
-
-    ## Dummies
-    do_alignments = DummyOperator(
-        task_id = "do_alignments"
-    )
-
-    do_qc_and_quantification = DummyOperator(
-        task_id = "do_qc_and_quantification"
-    )
-
-    be_done = DummyOperator(
-        task_id = "done"
-    )
-
-    start = DummyOperator(
-        task_id = "start"
-    )
-
-    start >> [parse_filename, create_temp] >> create_base_output_dir >> run_kneaddata >> run_humann3 >> cleanup_temp >> be_done
+     #    ## Dummies
+     #    do_alignments = DummyOperator(
+     #        task_id = "do_alignments"
+     #    )
+    
+     #    do_qc_and_quantification = DummyOperator(
+     #        task_id = "do_qc_and_quantification"
+     #    )
+    
+     #    be_done = DummyOperator(
+     #        task_id = "done"
+     #    )
+    
+        start = DummyOperator(
+            task_id = "start"
+        )
+    
+        # start >>  create_temp >> create_base_output_dir >> run_kneaddata >> run_humann3 >> cleanup_temp >> be_done
+        start >>  create_temp >> create_base_output_dir
